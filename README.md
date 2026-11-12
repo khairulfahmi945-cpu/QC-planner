@@ -10,8 +10,7 @@ Single-file web app (`index.html`) for looking up quay crane (QC) maintenance st
 - Respects `prefers-reduced-motion`. If WebGL or three.js isn't available, it falls back to the original illustrated SVG.
 
 ## Data
-The page has no built-in data. Tap **Upload live update file** and choose the latest LIVE UPDATE Excel file. The page saves it in this browser (IndexedDB) and opens it automatically next time. Uploading a newer file replaces it.
+The page has no built-in data. Tap **Upload live update file** and choose the latest LIVE UPDATE Excel file.
 
-Saved data stays on the device and browser where it was uploaded. Each phone or PC needs its own upload.
-
-Search, tabs and Excel export work on any host, including GitHub Pages.
+- **On claude.ai (shared):** one upload is stored in the page's shared storage, and everyone who opens the page sees it straight away, on any device. Only people with edit access see the upload button; everyone else sees the latest file.
+- **Anywhere else (for example GitHub Pages):** the upload is saved only in that browser (IndexedDB) and reopens automatically next time.

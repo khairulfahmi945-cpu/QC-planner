@@ -490,6 +490,9 @@ const DB={
     try{localStorage.setItem('qcD',JSON.stringify(d))}catch(_){try{localStorage.removeItem('qcD')}catch(_){}}
     return ok1}
 };
+/* Shared mode (claude.ai): one upload is stored in the page's shared storage and every viewer loads it. */
+const SH={db:null,assets:null,cur:null,loading:null,got:false};
+const canUp=()=>!SH.db||!!SH.assets;
 const $=s=>document.querySelector(s);
 const E=v=>String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -559,7 +562,7 @@ function count(el,n){
 }
 function home(){
   const none=!D;$('#stats').hidden=none;$('#exall').hidden=none;$('#upd').hidden=none;$('#asof').hidden=none;
-  if(none){$('#fleets').innerHTML='<article class="card empty-state"><h3>No data loaded yet</h3><p>Tap <b>Upload live update file</b> and choose the latest <b>LIVE UPDATE</b> Excel file (.xlsx). The page saves it on this device and opens it automatically next time. Upload a newer file any time to replace it.</p></article>';$('#stats').innerHTML='';return}
+  if(none){$('#fleets').innerHTML='<article class="card empty-state"><h3>No data loaded yet</h3><p>'+(!canUp()?'Waiting for an editor to upload the latest <b>LIVE UPDATE</b> file. It appears here automatically.':SH.db?'Tap <b>Upload live update file</b> and choose the latest <b>LIVE UPDATE</b> Excel file (.xlsx). Everyone who opens this page sees it straight away. Upload a newer file any time to replace it.':'Tap <b>Upload live update file</b> and choose the latest <b>LIVE UPDATE</b> Excel file (.xlsx). The page saves it on this device and opens it automatically next time. Upload a newer file any time to replace it.')+'</p></article>';$('#stats').innerHTML='';return}
   const g={};IDS.forEach(i=>{(g[D.qcs[i].fleet||'Other']=g[D.qcs[i].fleet||'Other']||[]).push(i)});
   let n=0;
   $('#fleets').innerHTML=Object.entries(g).map(([f,a])=>'<h2>'+E(f)+' <small>'+a.length+'</small></h2><div class="grid">'+a.map(i=>{const c=D.qcs[i],s=stOf(c);return '<a class="qc'+(isDown(c)?' down':'')+'" style="--i:'+(n++)+'" href="#'+i+'">'+i+(s&&s!=='OPS'?'<small>'+E(s)+'</small>':'')+'</a>'}).join('')+'</div>').join('');
@@ -567,7 +570,7 @@ function home(){
   const S=[['Cranes',IDS.length,'var(--tl)'],['In operation',ops,'var(--ok)'],['Down',dn,'var(--bd)'],['Open PR / WO',op,'var(--yl)']];
   $('#stats').innerHTML=S.map((x,i)=>'<div class="stat" style="--c:'+x[2]+';--i:'+i+'"><b data-n="'+x[1]+'">0</b><span>'+x[0]+'</span></div>').join('');
   document.querySelectorAll('#stats b').forEach(b=>count(b,+b.dataset.n));
-  $('#asof').textContent='Source file: '+D.src+'.';$('#upd').innerHTML='Data from <b>'+E(D.src)+'</b>, uploaded <b>'+upd()+'</b>';
+  $('#asof').textContent='Source file: '+D.src+'.';$('#upd').innerHTML='Data from <b>'+E(D.src)+'</b>, uploaded <b>'+upd()+'</b>.'+(SH.db?' Shared with everyone who opens this page.':' Saved on this device only.');
 }
 function matches(v){
   const n=String(v).toUpperCase().replace(/[^0-9]/g,'').replace(/^0+/,'');
@@ -653,13 +656,42 @@ $('#file').addEventListener('change',async e=>{const f=e.target.files[0];e.targe
  if(!window.XLSX)return say('The Excel reader is still loading. Wait a few seconds and try again.','bad');
  say('Reading '+f.name+'. This can take up to 30 seconds on a phone.');
  await new Promise(r=>setTimeout(r,60));
- try{const d=parse(await f.arrayBuffer(),f.name);if(!Object.keys(d.qcs).length)throw new Error('no cranes found in this file.');D=d;IDS=Object.keys(d.qcs);const saved=await DB.set(d);
-  home();route();say('Loaded '+IDS.length+' cranes from '+f.name+'.'+(saved?' Saved on this device.':' Could not save it on this device; it will be gone after you close the page.'),saved?'ok':'bad')}
- catch(x){say('Could not read this file: '+x.message,'bad')}});
+ let d;try{d=parse(await f.arrayBuffer(),f.name);if(!Object.keys(d.qcs).length)throw new Error('no cranes found in this file.')}catch(x){return say('Could not read this file: '+x.message,'bad')}
+ D=d;IDS=Object.keys(d.qcs);const saved=await DB.set(d);home();route();
+ if(SH.db&&SH.assets){
+  say('Loaded '+IDS.length+' cranes. Sharing with everyone…');
+  try{const up=await SH.assets.upload(new Blob([JSON.stringify(d)],{type:'application/json'}),{type:'application/json'});
+   const old=SH.cur&&SH.cur.asset;SH.loading=d.at;
+   await SH.db.doc('live/current').set({asset:up.id,src:d.src,built:d.built,at:d.at,cranes:IDS.length});
+   if(old&&old!==up.id)SH.assets.delete(old).catch(()=>{});
+   say('Loaded '+IDS.length+' cranes from '+f.name+'. Everyone who opens this page now sees this file.','ok')}
+  catch(x){say('Loaded on this device, but sharing failed ('+((x&&x.code)||'error')+'). Try uploading again.','bad')}
+ } else say('Loaded '+IDS.length+' cranes from '+f.name+'.'+(saved?' Saved on this device.':' Could not save it on this device; it will be gone after you close the page.'),saved?'ok':'bad');
+});
 $('#exall').addEventListener('click',()=>xport(IDS,'QC-all-'+D.built+'.xlsx'));
 $('#detail').addEventListener('click',e=>{if(e.target.id==='exone')xport([cur],'QC-'+cur+'-'+D.built+'.xlsx')});
+async function shared(){
+  if(!window.claude||!window.claude.use)return;
+  let db=null;try{db=await window.claude.use('db')}catch(_){}
+  if(!db)return;
+  SH.db=db;try{SH.assets=await window.claude.use('assets')}catch(_){}
+  $('#up').hidden=!SH.assets;home();
+  const tm=setTimeout(()=>{if(!SH.got)say('Can\'t reach the shared data yet.'+(D?' Showing the copy saved on this device.':''),'bad')},10000);
+  db.doc('live/current').onSnapshot(async s=>{
+    if(!s.metadata.fromCache&&!SH.got){SH.got=true;clearTimeout(tm)}
+    if(!s.exists){SH.cur=null;return}
+    const m=s.data();SH.cur=m;
+    if((D&&D.at===m.at&&D.src===m.src)||SH.loading===m.at)return;
+    SH.loading=m.at;
+    try{const r=await fetch('/_blob/'+m.asset);if(!r.ok)throw 0;const d=await r.json();if(!d||!d.qcs)throw 0;
+      if(SH.cur!==m)return;D=d;IDS=Object.keys(d.qcs);DB.set(d);home();route();
+      if(!SH.assets)say('Updated to '+d.src+'.','ok')}
+    catch(_){SH.loading=null;say('Could not load the latest shared data. Reload the page to try again.','bad')}
+  },()=>{clearTimeout(tm);SH.got=true;say('Shared data is unavailable right now.'+(D?' Showing the copy saved on this device.':''),'bad')});
+}
 home();route();
-DB.get().then(s=>{if(s&&s.qcs){D=s;IDS=Object.keys(s.qcs);home();route()}});
+shared();
+DB.get().then(s=>{if(s&&s.qcs&&!D){D=s;IDS=Object.keys(s.qcs);home();route()}});
 </script>
 </body>
 </html>
