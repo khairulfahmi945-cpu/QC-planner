@@ -150,6 +150,10 @@ main{max-width:720px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 .empty-state p{margin:0;color:var(--mu)}
 .empty-state b{color:var(--ink)}
+label.btn{display:inline-flex;align-items:center;justify-content:center}
+#file:focus-visible+*,#file:focus-visible{outline:3px solid var(--tl)}
+.vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);border:0;white-space:nowrap}
+.tools{position:relative}
 </style>
 </head>
 <body>
@@ -164,7 +168,7 @@ main{max-width:720px}
 <p class="hint" id="h">Type the number only. 45 opens Q45.</p>
 </form></div>
 <div class="stats" id="stats"></div>
-<div class="tools" id="tools"><input type="file" id="file" accept=".xlsx,.xlsm" hidden><button class="btn pri" id="up" type="button">Upload live update file</button><button class="btn" id="exall" type="button">Export all (Excel)</button></div>
+<div class="tools" id="tools"><label class="btn pri" id="up" for="file">Upload live update file</label><input type="file" id="file" class="vh" accept=".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12,application/vnd.ms-excel"><button class="btn" id="exall" type="button">Export all (Excel)</button></div>
 <p class="msg" id="msg" role="status"></p>
 <p class="upd" id="upd"></p>
 <div id="sug" aria-live="polite"></div>
@@ -484,9 +488,11 @@ let D=null,IDS=[];
 /* Saved data: the latest uploaded live update file, kept in this browser (IndexedDB, localStorage fallback). */
 const DB={
   open(){return new Promise((ok,no)=>{if(!window.indexedDB)return no(new Error('no idb'));const r=indexedDB.open('qc-lookup',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})},
-  async get(){try{const db=await DB.open();const v=await new Promise((ok,no)=>{const q=db.transaction('kv').objectStore('kv').get('data');q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)});if(v)return v}catch(_){}
+  async get(){return Promise.race([DB._get(),new Promise(r=>setTimeout(()=>r(null),4000))])},
+  async _get(){try{const db=await DB.open();const v=await new Promise((ok,no)=>{const q=db.transaction('kv').objectStore('kv').get('data');q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)});if(v)return v}catch(_){}
     try{return JSON.parse(localStorage.getItem('qcD')||'null')}catch(_){return null}},
-  async set(d){let ok1=false;try{const db=await DB.open();await new Promise((ok,no)=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(d,'data');t.oncomplete=ok;t.onerror=()=>no(t.error)});ok1=true}catch(_){}
+  async set(d){return Promise.race([DB._set(d),new Promise(r=>setTimeout(()=>r(false),4000))])},
+  async _set(d){let ok1=false;try{const db=await DB.open();await new Promise((ok,no)=>{const t=db.transaction('kv','readwrite');t.objectStore('kv').put(d,'data');t.oncomplete=ok;t.onerror=()=>no(t.error)});ok1=true}catch(_){}
     try{localStorage.setItem('qcD',JSON.stringify(d))}catch(_){try{localStorage.removeItem('qcD')}catch(_){}}
     return ok1}
 };
@@ -651,9 +657,9 @@ async function xport(ids,fn){
  try{await dls.save({filename:fn,data:XLSX.write(wb,{type:'array',bookType:'xlsx'})});say('Export ready: '+fn,'ok')}
  catch(x){if(!x||x.code!=='declined')say('Could not save the file ('+((x&&x.code)||'error')+').','bad')}
 }
-$('#up').addEventListener('click',()=>$('#file').click());
 $('#file').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
- if(!window.XLSX)return say('The Excel reader is still loading. Wait a few seconds and try again.','bad');
+ for(let i=0;i<40&&!window.XLSX;i++){say('Loading the Excel reader…');await new Promise(r=>setTimeout(r,250))}
+ if(!window.XLSX)return say('The Excel reader could not load. Check your internet connection and try again.','bad');
  say('Reading '+f.name+'. This can take up to 30 seconds on a phone.');
  await new Promise(r=>setTimeout(r,60));
  let d;try{d=parse(await f.arrayBuffer(),f.name);if(!Object.keys(d.qcs).length)throw new Error('no cranes found in this file.')}catch(x){return say('Could not read this file: '+x.message,'bad')}
@@ -675,7 +681,8 @@ async function shared(){
   let db=null;try{db=await window.claude.use('db')}catch(_){}
   if(!db)return;
   SH.db=db;try{SH.assets=await window.claude.use('assets')}catch(_){}
-  $('#up').hidden=!SH.assets;home();
+  if(!SH.assets){$('#up').hidden=true;say('Only people with edit access to this page can upload. You see the latest file they uploaded.')}
+  home();
   const tm=setTimeout(()=>{if(!SH.got)say('Can\'t reach the shared data yet.'+(D?' Showing the copy saved on this device.':''),'bad')},10000);
   db.doc('live/current').onSnapshot(async s=>{
     if(!s.metadata.fromCache&&!SH.got){SH.got=true;clearTimeout(tm)}
