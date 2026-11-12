@@ -609,15 +609,15 @@ addEventListener('hashchange',route);
 const PARTS=['HOIST','TROLLEY','BOOM','GANTRY','AUXILIARY'];
 const pad=n=>String(+n).padStart(2,'0');
 const cv=v=>{if(v==null||v==='')return '';if(v instanceof Date){if(isNaN(v))return '';const d=new Date(v.getTime()+432e5),y=d.getFullYear();return y<2000?'':y+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}return typeof v==='number'?String(v):String(v).replace(/\s+/g,' ').trim()};
-const qid=v=>{const m=/^Q\s*-?\s*(\d{1,3})$/i.exec(cv(v));return m?'Q'+pad(m[1]):null};
+const qid=v=>{const m=/^Q\s*C?\s*-?\s*(\d{1,3})$/i.exec(cv(v));return m?'Q'+pad(m[1]):null};
 const qids=(...a)=>{for(const v of a){const o=[];String(v||'').replace(/(^|[^A-Za-z0-9])Q(?:C)?\s*-?\s*(\d{1,3})(?!\d)/gi,(s,x,n)=>{const q='Q'+pad(n);if(!o.includes(q))o.push(q);return s});if(o.length)return o}return[]};
 const money=v=>{const s=cv(v);return /^\d+(\.\d+)?$/.test(s)?'MYR '+Number(s).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):s};
 const upd=()=>!D?'':fd(D.built)+(D.at?', '+new Date(D.at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'');
 const say=(t,k)=>{const m=$('#msg');m.textContent=t;m.className='msg '+(k||'')};
 function parse(buf,name){
  const nm=XLSX.read(buf,{type:'array',bookSheets:true}).SheetNames,f1=p=>nm.find(x=>x.trim().toUpperCase().indexOf(p)===0);
- const MR=/^(JANUARI|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER)(\s+2026)?\s*$/i;
- const mi=s=>MON.findIndex(m=>m.toUpperCase()===s.trim().slice(0,3).toUpperCase());
+ const MR=/^(PM\s+)?(JANUARI|JANUARY|JAN|FEBRUARY|FEB|MARCH|MAR|APRIL|APR|MAY|JUNE|JUN|JULY|JUL|AUGUST|AUG|SEPTEMBER|SEPT|SEP|OCTOBER|OCT|NOVEMBER|NOV|DECEMBER|DEC)(\s*'?\s*(2026|26))?\s*$/i;
+ const mi=s=>MON.findIndex(m=>m.toUpperCase()===s.trim().replace(/^PM\s+/i,'').slice(0,3).toUpperCase());
  const months=nm.filter(x=>MR.test(x)).sort((a,b)=>mi(a)-mi(b));
  const nF=f1('FYK INS'),nP=f1('PR 2026'),nW=f1('WIREROPE 2026'),nS=f1('SHEET1'),nC=f1('SOS COUPLING'),nO=f1('OIL SAMPLING');
  if(!nF||!months.length)throw new Error('FYK INS or the monthly sheets are missing.');
@@ -625,12 +625,24 @@ function parse(buf,name){
  const rows=n=>n?XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''}):[];
  const Q={},M=new Set(),mk=q=>Q[q]||(Q[q]={pm:[],pr:[],wr:[],oil:[],fyk:[]});
  rows(nF).slice(2).forEach(r=>{const q=qid(r[1]);if(!q)return;M.add(q);Object.assign(mk(q),{fleet:cv(r[2]),desc:cv(r[3]),pma:cv(r[4]),serial:cv(r[5]),pmaExp:cv(r[6]),fyk:[0,1,2,3].map(i=>({q:'Q'+(i+1),a:cv(r[7+2*i]),n:cv(r[8+2*i])}))})});
- months.forEach(sh=>{const R=rows(sh),h=(R[3]||[]).map(x=>cv(x).toUpperCase()),mo=MON[mi(sh)];
-  let L=h.findIndex(x=>x.indexOf('LIVE INSPECTION')>=0);if(L<0)L=h.length;
-  const col=n=>{for(let i=1;i<L;i++)if(h[i]===n)return i;return -1},ca=[],cp=[];
-  for(let i=1;i<L;i++){if(h[i].indexOf('ACTUAL')>=0)ca.push(i);if(PARTS.includes(h[i]))cp.push(i)}
-  const ci=col('QC ID'),cs=col('QC STATUS'),cl=col('LAST MAINTENANCE DATE'),ct=col('STATUS'),cr=col('REMARK'),g=(r,i)=>i>=0?cv(r[i]):'';
-  R.slice(4).forEach(r=>{const q=qid(r[ci]);if(!q)return;M.add(q);const p={};cp.forEach(i=>{const v=cv(r[i]);if(v)p[h[i].charAt(0)+h[i].slice(1).toLowerCase()]=v});mk(q).pm.push({m:mo,st:g(r,cs),ls:g(r,cl),a:ca.map(i=>cv(r[i])).filter(Boolean),s:g(r,ct),r:g(r,cr),p})})});
+ months.forEach(sh=>{const R=rows(sh),mo=MON[mi(sh)],N=x=>cv(x).toUpperCase().replace(/\s+/g,' ').trim();
+  /* Find the QC ID column from the data itself, then the header rows just above the first crane row. */
+  const W=R.reduce((m,r)=>Math.max(m,r.length),0);let ci=-1,best=0;
+  for(let i=0;i<Math.min(W,12);i++){let n=0;R.forEach(r=>{if(qid(r[i]))n++});if(n>best){best=n;ci=i}}
+  if(ci<0||best<1)return;
+  const f=R.findIndex(r=>qid(r[ci]));
+  const hr=[];for(let k=f-1;k>=0&&hr.length<2;k--){if(R[k].some(x=>cv(x)!==''))hr.unshift(R[k])}
+  const h=[];for(let i=0;i<W;i++)h.push(hr.map(r=>N(r[i])).filter(Boolean).join(' '));
+  const top=hr.length>1?hr[0].map(N):[],last=hr.length?hr[hr.length-1].map(N):[];
+  let L=h.findIndex(x=>x.indexOf('LIVE INSPECTION')>=0);if(L<0)L=W;
+  const find=t=>{for(let i=0;i<L;i++)if(i!==ci&&t(h[i]||'',last[i]||''))return i;return -1};
+  const cs=find((x,l)=>/QC\s*STATUS|CRANE STATUS|QC CONDITION/.test(x)),
+        cl=find(x=>/LAST/.test(x)&&/MAINT|PM|SERVIC/.test(x)),
+        ct=find((x,l)=>(l==='STATUS'||/PM STATUS|^STATUS$|JOB STATUS/.test(x))&&!/QC\s*STATUS|CRANE STATUS/.test(x)),
+        cr=find(x=>/REMARK/.test(x));
+  const ca=[],cp=[];for(let i=0;i<L;i++){if(i===ci)continue;if(/ACTUAL/.test(h[i]||''))ca.push(i);const w=PARTS.find(P=>(last[i]||'')===P||(h[i]||'')===P);if(w)cp.push([i,w])}
+  const g=(r,i)=>i>=0?cv(r[i]):'';
+  R.slice(f).forEach(r=>{const q=qid(r[ci]);if(!q)return;M.add(q);const p={};cp.forEach(([i,w])=>{const v=cv(r[i]);if(v)p[w.charAt(0)+w.slice(1).toLowerCase()]=v});mk(q).pm.push({m:mo,st:g(r,cs),ls:g(r,cl),a:ca.map(i=>cv(r[i])).filter(Boolean),s:g(r,ct),r:g(r,cr),p})})});
  rows(nP).slice(2).forEach(r=>{const ids=qids(r[1],r[2]);if(!ids.length)return;const it={d:cv(r[0]),j:cv(r[2]).slice(0,220),sc:cv(r[3]),wo:cv(r[4]),pr:cv(r[5]),v:cv(r[6]),rm:money(r[7]),st:cv(r[8]),ps:cv(r[9]),po:cv(r[10]),grn:cv(r[11]),pu:cv(r[12]).slice(0,200)};ids.forEach(q=>{if(M.has(q))mk(q).pr.push(it)})});
  let wm='';rows(nW).slice(2).forEach(r=>{if(cv(r[0]))wm=cv(r[0]);const q=qid(r[2]);if(!q||!M.has(q))return;let p=cv(r[17]);if(p!==''&&!isNaN(p))p=Number(p).toFixed(1);mk(q).wr.push({mo:wm.charAt(0)+wm.slice(1).toLowerCase(),j:cv(r[3]).slice(0,160),js:cv(r[5]),item:cv(r[6]),wo:cv(r[9]),pr:cv(r[10]),cwo:cv(r[11]),pd:cv(r[12]),rec:cv(r[14]),cur:cv(r[15]),over:cv(r[16]),pct:p,av:cv(r[19])})});
  rows(nS).slice(6).forEach(r=>{const q=qid(r[0]);if(q&&M.has(q))mk(q).sany={st:cv(r[1]),item:cv(r[5]),cur:cv(r[6])}});
@@ -668,7 +680,7 @@ $('#file').addEventListener('change',async e=>{const f=e.target.files[0];e.targe
  if(!window.XLSX)return say('The Excel reader could not load. Check your internet connection and try again.','bad');
  say('Reading '+f.name+'. This can take up to 30 seconds on a phone.');
  await new Promise(r=>setTimeout(r,60));
- let d;try{d=parse(await f.arrayBuffer(),f.name);if(!Object.keys(d.qcs).length)throw new Error('no cranes found in this file.')}catch(x){return say('Could not read this file: '+x.message,'bad')}
+ let d;try{d=parse(await f.arrayBuffer(),f.name);if(!Object.keys(d.qcs).length)throw new Error('no cranes found in this file.');d.pmRows=Object.values(d.qcs).reduce((n,c)=>n+c.pm.length,0)}catch(x){return say('Could not read this file: '+x.message,'bad')}
  D=d;IDS=Object.keys(d.qcs);const saved=await DB.set(d);home();route();
  if(SH.db&&SH.assets){
   say('Loaded '+IDS.length+' cranes. Sharing with everyone…');
@@ -676,7 +688,7 @@ $('#file').addEventListener('change',async e=>{const f=e.target.files[0];e.targe
    const old=SH.cur&&SH.cur.asset;SH.loading=d.at;
    await SH.db.doc('live/current').set({asset:up.id,src:d.src,built:d.built,at:d.at,cranes:IDS.length});
    if(old&&old!==up.id)SH.assets.delete(old).catch(()=>{});
-   say('Loaded '+IDS.length+' cranes from '+f.name+'. Everyone who opens this page now sees this file.','ok')}
+   say('Loaded '+IDS.length+' cranes and '+d.pmRows+' PM rows from '+f.name+'. Everyone who opens this page now sees this file.'+(d.pmRows?'':' Warning: no PM rows were found in the monthly sheets, so crane status will be blank.'),d.pmRows?'ok':'bad')}
   catch(x){say('Loaded on this device, but sharing failed ('+((x&&x.code)||'error')+'). Try uploading again.','bad')}
  } else say('Loaded '+IDS.length+' cranes from '+f.name+'.'+(saved?' Saved on this device.':' Could not save it on this device; it will be gone after you close the page.'),saved?'ok':'bad');
 });
