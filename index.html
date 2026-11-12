@@ -657,6 +657,12 @@ async function xport(ids,fn){
  try{await dls.save({filename:fn,data:XLSX.write(wb,{type:'array',bookType:'xlsx'})});say('Export ready: '+fn,'ok')}
  catch(x){if(!x||x.code!=='declined')say('Could not save the file ('+((x&&x.code)||'error')+').','bad')}
 }
+/* Some in-app views (for example a phone app's built-in browser) never open the file picker. Detect that and say what to do. */
+let pickT=0;
+$('#up').addEventListener('click',()=>{clearTimeout(pickT);const left=()=>{clearTimeout(pickT)};
+  addEventListener('blur',left,{once:true});document.addEventListener('visibilitychange',left,{once:true});
+  pickT=setTimeout(()=>say('The file picker did not open here. This app may block file uploads. Open the same link in Safari or Chrome, or upload from a computer. Everyone sees the upload either way.','bad'),1800)});
+$('#file').addEventListener('change',()=>clearTimeout(pickT));
 $('#file').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
  for(let i=0;i<40&&!window.XLSX;i++){say('Loading the Excel reader…');await new Promise(r=>setTimeout(r,250))}
  if(!window.XLSX)return say('The Excel reader could not load. Check your internet connection and try again.','bad');
