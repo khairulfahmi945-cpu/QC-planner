@@ -9,4 +9,9 @@ Single-file web app (`index.html`) for looking up quay crane (QC) maintenance st
 - Status dots on every crane tile (down cranes blink), hover lift, and staggered fade-in on cards.
 - Respects `prefers-reduced-motion`. If WebGL or three.js isn't available, it falls back to the original illustrated SVG.
 
-All existing features are kept: search, tabs, Excel upload of the live update file, and Excel export.
+## Data
+The page has no built-in data. Tap **Upload live update file** and choose the latest LIVE UPDATE Excel file. The page saves it in this browser (IndexedDB) and opens it automatically next time. Uploading a newer file replaces it.
+
+Saved data stays on the device and browser where it was uploaded. Each phone or PC needs its own upload.
+
+Search, tabs and Excel export work on any host, including GitHub Pages.
