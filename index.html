@@ -160,6 +160,95 @@ label.btn{display:inline-flex;align-items:center;justify-content:center}
 /* Tabs wrap onto extra rows so every tab is visible on a phone (no sideways swipe needed). */
 .tabs{position:static;flex-wrap:wrap;overflow:visible;margin:0 0 14px;padding:0;gap:6px}
 .tabs button{flex:1 1 auto;min-height:42px;padding:0 12px}
+/* ===== Fleet pulse panel ===== */
+#stats{display:block;margin:0}
+.pulse{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"ring kpis" "bars bars";gap:14px 18px;align-items:center;background:var(--sf);border:1px solid var(--ln);border-radius:18px;padding:16px;margin:0 0 14px;animation:rise .5s backwards}
+.ring{grid-area:ring;position:relative;width:118px;height:118px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:11}
+.ring .trk{stroke:var(--bdb)}
+.ring .val{stroke:var(--ok);stroke-linecap:round;stroke-dasharray:var(--c);stroke-dashoffset:var(--o);animation:ring 1.3s cubic-bezier(.2,.8,.2,1) .15s backwards}
+@keyframes ring{from{stroke-dashoffset:var(--c)}}
+.rc{position:absolute;inset:0;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;text-align:center}
+.rc b{font:700 34px/1 "Barlow Semi Condensed",Barlow,sans-serif;font-variant-numeric:tabular-nums}
+.rc small{font:700 16px "Barlow Semi Condensed",Barlow,sans-serif;align-self:flex-start;margin-top:3px}
+.rc span{flex-basis:100%;font-size:12px;color:var(--mu);margin-top:2px}
+.kpis{grid-area:kpis;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpis div{display:flex;flex-direction:column;gap:2px;padding-left:10px;border-left:3px solid var(--ln)}
+.kpis div.k-bad{border-left-color:var(--bd)}
+.kpis b{font:700 28px/1 "Barlow Semi Condensed",Barlow,sans-serif;font-variant-numeric:tabular-nums}
+.kpis span{font-size:13px;color:var(--mu);line-height:1.2}
+.bars{grid-area:bars;display:grid;gap:12px}
+.rt{display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:5px}
+.rt span{font-weight:600}
+.rt b{font-variant-numeric:tabular-nums;color:var(--mu);font-weight:600}
+.meter{display:flex;height:10px;border-radius:99px;background:var(--bg);overflow:hidden;box-shadow:inset 0 0 0 1px var(--ln)}
+.meter i{display:block;width:var(--w);height:100%;transform-origin:left;animation:grow .9s cubic-bezier(.2,.8,.2,1) .25s backwards}
+.meter i+i{box-shadow:-1px 0 0 var(--sf)}
+@keyframes grow{from{transform:scaleX(0)}}
+.s-ok{background:var(--ok)}.s-wn{background:var(--wn)}.s-bd{background:var(--bd)}.s-mu{background:var(--ln)}
+.lg{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px;font-size:13px;color:var(--mu)}
+.lg span{display:inline-flex;align-items:center;gap:5px}
+.lg i{width:8px;height:8px;border-radius:2px}
+.lg b{color:var(--ink);font-variant-numeric:tabular-nums}
+@media (max-width:420px){.pulse{grid-template-columns:1fr;grid-template-areas:"ring" "kpis" "bars";justify-items:stretch}.ring{justify-self:center}}
+/* ===== Needs attention ===== */
+.attn{margin:0 0 6px}
+.ah{display:flex;align-items:baseline;gap:8px;margin:20px 0 8px}
+.ah h2{margin:0}
+.ah small{color:var(--mu);font-size:14px}
+.alist{display:grid;gap:8px}
+.ai{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"id fl go" "rs rs go";align-items:center;gap:4px 12px;background:var(--sf);border:1px solid var(--ln);border-left:4px solid var(--bd);border-radius:12px;padding:10px 12px 10px 14px;color:inherit;text-decoration:none;transition:transform .18s,box-shadow .18s,border-color .18s;animation:rise .4s backwards;animation-delay:calc(var(--i,0)*45ms)}
+.ai b{grid-area:id;font:700 22px/1 "Barlow Semi Condensed",Barlow,sans-serif}
+.ai .af{grid-area:fl;color:var(--mu);font-size:14px}
+.ai .ar{grid-area:rs;display:flex;flex-wrap:wrap;gap:6px}
+.ai .go{grid-area:go;font-size:26px;color:var(--mu);transition:transform .18s}
+.ai:hover{transform:translateY(-2px);box-shadow:0 10px 20px -12px rgba(5,17,23,.55)}
+.ai:hover .go{transform:translateX(3px);color:var(--tl)}
+.ai.warn{border-left-color:var(--wn)}
+.ai.more-ai{display:none}
+.attn.open .ai.more-ai{display:grid}
+/* ===== Filters + tiles ===== */
+.fhead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px;margin:22px 0 8px}
+.fhead h2{margin:0}
+.key{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:13px;color:var(--mu)}
+.key i{width:14px;height:4px;border-radius:2px;margin-left:6px}
+.key i:first-child{margin-left:0}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 4px}
+.filters button{min-height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--ln);background:var(--sf);font-weight:600;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .12s}
+.filters button small{font-weight:500;opacity:.7;margin-left:2px}
+.filters button[aria-pressed="true"]{background:var(--tl);border-color:var(--tl);color:#fff}
+.filters button:active,.qc:active,.ai:active,.btn:active,.tabs button:active{transform:scale(.97)}
+.qc{overflow:hidden}
+.qc::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--ln)}
+.qc.pm-done::after,.key .pm-done{background:var(--ok)}
+.qc.pm-plan::after,.key .pm-plan{background:var(--wn)}
+.qc.pm-pend::after,.key .pm-pend{background:var(--ln)}
+/* ===== PM timeline ===== */
+.tl{list-style:none;display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin:4px 0 12px;padding:0}
+.tl li{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--mu)}
+.tl i{width:100%;max-width:26px;height:10px;border-radius:3px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--ln);animation:pop .35s backwards}
+.tl li:nth-child(n){--d:0}
+.tl .t-done i{background:var(--ok);box-shadow:none}
+.tl .t-plan i{background:var(--wn);box-shadow:none}
+.tl .t-pend i{background:var(--wnb);box-shadow:inset 0 0 0 1px var(--wn)}
+.tl .t-down i{background:var(--bd);box-shadow:none}
+@keyframes pop{from{transform:scaleY(.2);opacity:0}}
+.tl li:nth-child(1) i{animation-delay:40ms}
+.tl li:nth-child(2) i{animation-delay:80ms}
+.tl li:nth-child(3) i{animation-delay:120ms}
+.tl li:nth-child(4) i{animation-delay:160ms}
+.tl li:nth-child(5) i{animation-delay:200ms}
+.tl li:nth-child(6) i{animation-delay:240ms}
+.tl li:nth-child(7) i{animation-delay:280ms}
+.tl li:nth-child(8) i{animation-delay:320ms}
+.tl li:nth-child(9) i{animation-delay:360ms}
+.tl li:nth-child(10) i{animation-delay:400ms}
+.tl li:nth-child(11) i{animation-delay:440ms}
+.tl li:nth-child(12) i{animation-delay:480ms}
+/* ===== Page transitions ===== */
+::view-transition-old(root),::view-transition-new(root){animation-duration:.28s}
+#detail:not([hidden]) #dhead{animation:rise .4s backwards}
 </style>
 </head>
 <body>
@@ -195,7 +284,7 @@ const st={tz:-4,sy:22,tx:-130,boom:0,carry:'ship'};
 let queue=[],ph=null,mode='work',t0=0;
 const ZS=25.2,ZL=-2,SHIP_TOP=12.8,TRUCK_TOP=4.05,SAFE=22,PARK=-4;
 const BOXC=[0xE4572E,0x2F6C7C,0xC28A2A,0x9C3F2B,0x3B7A4A,0x1F4E79];
-const cam={th:0,ph:0,dth:0,dph:0,r:100,tgt:null,drag:null};
+const cam={t0:0,th:0,ph:0,dth:0,dph:0,r:100,tgt:null,drag:null};
 
 function webgl(){try{const c=document.createElement('canvas');return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')))}catch(e){return false}}
 
@@ -457,8 +546,9 @@ function frame(dt){
   // camera
   const w=host?host.clientWidth:1,h=host?host.clientHeight:1,asp=w/Math.max(1,h);
   const auto=RM?0:.2*Math.sin(t*.07);
-  const th=cam.th+auto+cam.dth,phi=cam.ph+cam.dph;
-  const r=cam.r*Math.min(1.9,Math.max(1,1.55/asp));
+  const ik=RM?1:Math.min(1,(performance.now()-cam.t0)/2800),ie=1-Math.pow(1-ik,3);
+  const th=cam.th+auto+cam.dth-.7*(1-ie),phi=cam.ph+cam.dph+.32*(1-ie);
+  const r=cam.r*Math.min(1.9,Math.max(1,1.55/asp))*(1+.85*(1-ie));
   CAM.position.set(cam.tgt.x+Math.sin(th)*Math.cos(phi)*r,cam.tgt.y+Math.sin(phi)*r,cam.tgt.z+Math.cos(th)*Math.cos(phi)*r);
   CAM.lookAt(cam.tgt);sky.position.copy(CAM.position);
   R.render(S,CAM);
@@ -482,7 +572,7 @@ function mount(el,o){
   // framing
   if(o.close){cam.th=1.78;cam.ph=.1;cam.r=down?128:100;cam.tgt.set(0,down?34:20,down?2:12)}
   else{cam.th=1.75;cam.ph=.09;cam.r=118;cam.tgt.set(0,12,12)}
-  cam.dth=0;cam.dph=0;
+  cam.dth=0;cam.dph=0;cam.t0=performance.now();
   resize();stop();start();if(RM||!raf)frame(0);
   return true;
 }
@@ -528,7 +618,18 @@ const critLbl=x=>{const n=crit(x);return n<9?'P'+n+(/minor/i.test(x.pri)?' · Mi
 const critTone=n=>n===1?'bad':n===2?'warn':'ok';
 const wqOpen=x=>!/clos|cancel|complet|reject/i.test(x.st||'');
 const topCrit=c=>Math.min(9,...wqOf(c).filter(wqOpen).map(crit));
+/* Fleet-level signals used by the pulse panel, attention list, filters and tiles. */
+const curMon=()=>{let k=-1;IDS.forEach(i=>D.qcs[i].pm.forEach(x=>{const j=MON.indexOf(x.m);if(j>k)k=j}));return k<0?null:MON[k]};
+const pmState=x=>!x?'none':/complete|done/i.test(x.s)?'done':/plan|progress|partial|sched/i.test(x.s)?'plan':'pend';
+const pmNow=(c,m)=>pmState(c.pm.find(x=>x.m===m));
+const pmaDays=c=>c.pmaExp?Math.round((new Date(c.pmaExp)-T)/864e5):null;
+const pmaState=c=>{const d=pmaDays(c);return d===null||isNaN(d)?'none':d<0?'exp':d<=60?'due':'ok'};
+let filt='all';
+const FILTERS=[['all','All',c=>true],['down','Down',c=>isDown(c)],['p1','P1 open',c=>topCrit(c)===1],['pend','PM not done',c=>{const m=curMon();return m&&pmNow(c,m)!=='done'}],['pma','PMA due / expired',c=>/exp|due/.test(pmaState(c))]];
+const why=c=>{const r=[];if(isDown(c))r.push(['Down: '+stOf(c),'bad']);if(topCrit(c)===1){const k=wqOf(c).filter(x=>wqOpen(x)&&crit(x)===1).length;r.push(['P1 work request'+(k>1?' × '+k:''),'bad'])}
+  const d=pmaDays(c);if(d!==null&&!isNaN(d)){if(d<0)r.push(['PMA expired '+(-d)+' d ago','bad']);else if(d<=30)r.push(['PMA expires in '+d+' d','warn'])}return r};
 
+const tl=c=>'<ol class="tl" aria-label="PM status by month">'+MON.map(m=>{const x=c.pm.find(y=>y.m===m),st=/down/i.test(x&&x.st||'')?'down':pmState(x);return '<li class="t-'+st+'" title="'+MN[m]+': '+({done:'PM done',plan:'In plan',pend:'Not done',none:'No record',down:'Crane down'}[st])+'"><i></i><span>'+m.charAt(0)+'</span></li>'}).join('')+'</ol>';
 const P={
 sum(c){
   const l=lastPM(c),o=c.pr.filter(isOpen).length,w=c.wr[c.wr.length-1],oil=c.oil[0];
@@ -536,7 +637,7 @@ sum(c){
   const ex=dd===null?'':dd<0?chip('Expired','bad'):dd<=60?chip('Due in '+dd+' days','warn'):chip('Valid','ok');
   const nx=c.fyk.filter(x=>x.n>=ISO).sort((a,b)=>a.n.localeCompare(b.n))[0];
   return '<article class="card"><h3>Crane</h3>'+dl(kv('Fleet',E(c.fleet)),kv('Type',E(c.desc)),kv('PMA no.',E(c.pma)),kv('Serial no.',E(c.serial)),kv('PMA / CF expiry',c.pmaExp?fd(c.pmaExp)+' '+ex:''))+'</article>'
-  +'<article class="card"><h3>Latest PM</h3>'+(l?'<div class="chips">'+chip(l.st)+chip(l.s)+'</div>'+dl(kv('Month',MN[l.m]+' 2026'),kv('PM done',l.a.map(fd).join(', ')),kv('Remark',E(l.r))):empty('No PM record in 2026.'))+'</article>'
+  +'<article class="card"><h3>Latest PM</h3>'+tl(c)+(l?'<div class="chips">'+chip(l.st)+chip(l.s)+'</div>'+dl(kv('Month',MN[l.m]+' 2026'),kv('PM done',l.a.map(fd).join(', ')),kv('Remark',E(l.r))):empty('No PM record in 2026.'))+'</article>'
   +'<article class="card"><h3>PR / WO</h3>'+dl(kv('Open','<b>'+o+'</b>'),kv('Complete','<b>'+c.pr.filter(x=>cat(x)==='done').length+'</b>'),kv('Total',c.pr.length),kv('Next inspection',nx?E(nx.q)+' plan, '+fd(nx.n):''))+'</article>'
   +(()=>{const q=wqOf(c),op=q.filter(wqOpen),tc=topCrit(c);return '<article class="card'+(tc<9?' crit-'+tc:'')+'"><h3>Work requests</h3>'+(q.length?'<div class="chips">'+(tc<9?chip('Highest open criticality: P'+tc,critTone(tc)):chip('No open requests','ok'))+'</div>'+dl(kv('Open','<b>'+op.length+'</b>'),kv('Open by criticality',[1,2,3].map(n=>{const k=op.filter(x=>crit(x)===n).length;return k?chip('P'+n+' × '+k,critTone(n)):''}).join(' ')),kv('Closed',q.length-op.length),kv('Total',q.length)):empty('No work requests for this crane.'))+'</article>'})()
   +(w||c.sany?'<article class="card"><h3>Wirerope</h3>'+(w?'<div class="chips">'+chip(w.js)+chip(w.av)+'</div>':'')+dl(w?kv('Job',E(w.j)):'',w?kv('Current moves',E(w.cur)):'',c.sany?kv('SANY update',E(c.sany.st)+(c.sany.cur?', '+E(c.sany.cur)+' moves':'')):'')+'</article>':'')
@@ -582,6 +683,16 @@ function gl(wrap,box,o){
   const ok=window.Q3D&&Q3D.mount($(box),o);
   $(wrap).classList.toggle('has-gl',!!ok);
 }
+function attention(all){
+  const a=all.map((c,i)=>({id:IDS[i],c,r:why(c)})).filter(x=>x.r.length).sort((x,y)=>(isDown(y.c)-isDown(x.c))||((topCrit(x.c)===1?0:1)-(topCrit(y.c)===1?0:1))||(y.r.length-x.r.length));
+  if(!a.length)return '';
+  return '<section class="attn" aria-label="Needs attention"><div class="ah"><h2>Needs attention</h2><small>'+a.length+' cranes</small></div><div class="alist">'
+   +a.map((x,i)=>'<a class="ai'+(x.r.some(r=>r[1]==='bad')?'':' warn')+(i>=6?' more-ai':'')+'" href="#'+x.id+'" style="--i:'+i+'"><b>'+x.id+'</b><span class="af">'+E(x.c.fleet)+'</span><span class="ar">'+x.r.map(r=>chip(r[0],r[1])).join('')+'</span><span class="go" aria-hidden="true">›</span></a>').join('')
+   +'</div>'+(a.length>6?'<button type="button" class="more" id="attnall">Show all '+a.length+'</button>':'')+'</section>';
+}
+document.addEventListener('click',e=>{const f=e.target.closest('[data-f]');if(f){filt=f.dataset.f;swap(home)}
+  if(e.target.id==='attnall'){document.querySelector('.attn').classList.add('open');e.target.remove()}});
+function swap(fn){if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.startViewTransition(fn);else fn()}
 function count(el,n){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){el.textContent=n;return}
   const t0=performance.now(),d=900;(function f(t){const p=Math.min(1,(t-t0)/d);el.textContent=Math.round(n*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0);
@@ -591,12 +702,29 @@ function home(){
   if(none){$('#fleets').innerHTML='<article class="card empty-state"><h3>No data loaded yet</h3><p>'+(!canUp()?'Waiting for an editor to upload the latest <b>LIVE UPDATE</b> file. It appears here automatically.':SH.db?'Tap <b>Upload live update file</b> and choose the latest <b>LIVE UPDATE</b> Excel file (.xlsx). Everyone who opens this page sees it straight away. Upload a newer file any time to replace it.':'Tap <b>Upload live update file</b> and choose the latest <b>LIVE UPDATE</b> Excel file (.xlsx). The page saves it on this device and opens it automatically next time. Upload a newer file any time to replace it.')+'</p></article>';$('#stats').innerHTML='';return}
   const g={};IDS.forEach(i=>{(g[D.qcs[i].fleet||'Other']=g[D.qcs[i].fleet||'Other']||[]).push(i)});
   let n=0;
-  $('#fleets').innerHTML=Object.entries(g).map(([f,a])=>'<h2>'+E(f)+' <small>'+a.length+'</small></h2><div class="grid">'+a.map(i=>{const c=D.qcs[i],s=stOf(c);return '<a class="qc'+(isDown(c)?' down':'')+'" style="--i:'+(n++)+'" href="#'+i+'">'+i+(s&&s!=='OPS'?'<small>'+E(s)+'</small>':topCrit(c)===1?'<small>P1 open</small>':'')+'</a>'}).join('')+'</div>').join('');
+  const fm=curMon(),fl=FILTERS.find(f=>f[0]===filt)||FILTERS[0];
+  const chips='<div class="filters" role="group" aria-label="Filter cranes">'+FILTERS.map(f=>{const k=IDS.filter(i=>f[2](D.qcs[i])).length;return '<button type="button" data-f="'+f[0]+'" aria-pressed="'+(filt===f[0])+'">'+f[1]+' <small>'+k+'</small></button>'}).join('')+'</div>';
+  const body=Object.entries(g).map(([f,a])=>{a=a.filter(i=>fl[2](D.qcs[i]));if(!a.length)return '';return '<h2>'+E(f)+' <small>'+a.length+'</small></h2><div class="grid">'+a.map(i=>{const c=D.qcs[i],s=stOf(c),ps=fm?pmNow(c,fm):'none';return '<a class="qc pm-'+ps+(isDown(c)?' down':'')+'" style="--i:'+(n++)+'" href="#'+i+'" title="'+i+(fm?' · PM '+MN[fm]+': '+({done:'done',plan:'in plan',pend:'not started',none:'no record'}[ps]):'')+'">'+i+(s&&s!=='OPS'?'<small>'+E(s)+'</small>':topCrit(c)===1?'<small>P1 open</small>':'')+'</a>'}).join('')+'</div>'}).join('');
+  $('#fleets').innerHTML='<div class="fhead"><h2>Cranes</h2>'+(fm?'<span class="key"><i class="pm-done"></i>PM done<i class="pm-plan"></i>In plan<i class="pm-pend"></i>Not started</span>':'')+'</div>'+chips+(body||empty('No cranes match this filter.'));
   const all=IDS.map(i=>D.qcs[i]),dn=all.filter(isDown).length,ops=all.filter(c=>/^ops$/i.test(stOf(c))).length,op=all.reduce((a,c)=>a+c.pr.filter(isOpen).length,0);
   const ow=all.flatMap(c=>wqOf(c).filter(wqOpen)),p1=ow.filter(x=>crit(x)===1).length;
-  const S=[['Cranes',IDS.length,'var(--tl)'],['In operation',ops,'var(--ok)'],['Down',dn,'var(--bd)'],['Open PR / WO',op,'var(--yl)'],['Open work requests',ow.length,'var(--wn)'],['Open P1 critical',p1,'var(--bd)']];
-  $('#stats').innerHTML=S.map((x,i)=>'<div class="stat" style="--c:'+x[2]+';--i:'+i+'"><b data-n="'+x[1]+'">0</b><span>'+x[0]+'</span></div>').join('');
-  document.querySelectorAll('#stats b').forEach(b=>count(b,+b.dataset.n));
+  const m=curMon(),N=IDS.length,pd=all.filter(c=>pmNow(c,m)==='done').length,pp=all.filter(c=>pmNow(c,m)==='plan').length;
+  const c1=ow.filter(x=>crit(x)===1).length,c2=ow.filter(x=>crit(x)===2).length,c3=ow.length-c1-c2;
+  const pe=all.filter(c=>pmaState(c)==='exp').length,pdu=all.filter(c=>pmaState(c)==='due').length,pok=all.filter(c=>pmaState(c)==='ok').length;
+  const pct=N?Math.round(ops/N*100):0,R=46,C=2*Math.PI*R;
+  const seg=(parts,tot)=>'<div class="meter">'+parts.map(([v,cl])=>v?'<i class="'+cl+'" style="--w:'+(v/Math.max(1,tot)*100).toFixed(2)+'%"></i>':'').join('')+'</div>';
+  const lg=a=>'<div class="lg">'+a.map(([t,v,cl])=>'<span><i class="'+cl+'"></i>'+t+' <b>'+v+'</b></span>').join('')+'</div>';
+  $('#stats').innerHTML='<section class="pulse" aria-label="Fleet health">'
+   +'<div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="'+R+'" class="trk"/><circle cx="60" cy="60" r="'+R+'" class="val" style="--c:'+C.toFixed(1)+';--o:'+(C*(1-ops/Math.max(1,N))).toFixed(1)+'"/></svg>'
+   +'<div class="rc"><b data-n="'+pct+'">0</b><small>%</small><span>in operation</span></div></div>'
+   +'<div class="kpis"><div><b data-n="'+N+'">0</b><span>Cranes</span></div><div class="k-bad"><b data-n="'+dn+'">0</b><span>Down</span></div><div><b data-n="'+op+'">0</b><span>Open PR / WO</span></div></div>'
+   +'<div class="bars">'
+   +'<div class="row"><div class="rt"><span>PM '+(m?MN[m]:'')+'</span><b>'+pd+' / '+N+' done</b></div>'+seg([[pd,'s-ok'],[pp,'s-wn']],N)+lg([['Done',pd,'s-ok'],['In plan',pp,'s-wn'],['Not started',N-pd-pp,'s-mu']])+'</div>'
+   +'<div class="row"><div class="rt"><span>Open work requests</span><b>'+ow.length+'</b></div>'+seg([[c1,'s-bd'],[c2,'s-wn'],[c3,'s-ok']],ow.length)+lg([['P1',c1,'s-bd'],['P2',c2,'s-wn'],['P3',c3,'s-ok']])+'</div>'
+   +'<div class="row"><div class="rt"><span>PMA / CF certificates</span><b>'+pe+' expired</b></div>'+seg([[pok,'s-ok'],[pdu,'s-wn'],[pe,'s-bd']],N)+lg([['Valid',pok,'s-ok'],['Due ≤ 60 d',pdu,'s-wn'],['Expired',pe,'s-bd']])+'</div>'
+   +'</div></section>'
+   +attention(all);
+  document.querySelectorAll('#stats b[data-n]').forEach(b=>count(b,+b.dataset.n));
   $('#asof').textContent='Source file: '+D.src+'.';$('#upd').innerHTML='Data from <b>'+E(D.src)+'</b>, uploaded <b>'+upd()+'</b>.'+(SH.db?' Shared with everyone who opens this page.':' Saved on this device only.');
 }
 function matches(v){
@@ -610,6 +738,7 @@ function route(){
   const id=decodeURIComponent(location.hash.slice(1)).toUpperCase();
   const on=!!D.qcs[id];
   $('#home').hidden=on;$('#detail').hidden=!on;$('#back').hidden=!on;
+  $('.bar h1').textContent=on?id+' · '+(D.qcs[id].fleet||'Crane'):'QC Lookup';
   if(on){cur=id;tab='sum';prAll=D.qcs[id].pr.some(x=>cat(x)==='open')?'open':'all';prN=40;wqAll=wqOf(D.qcs[id]).some(wqOpen)?'open':'all';wqN=40;head();draw();scrollTo(0,0)}
   else gl('#hero','#gl1',{id:'QC',sub:'Quay crane',down:false});
 }
@@ -628,7 +757,7 @@ $('#detail').addEventListener('click',e=>{
   else if(e.target.id==='moreq'){wqN+=40;draw()}
   else if(e.target.id==='more'){prN+=40;draw()}
 });
-addEventListener('hashchange',route);
+addEventListener('hashchange',()=>swap(route));
 const PARTS=['HOIST','TROLLEY','BOOM','GANTRY','AUXILIARY'];
 const pad=n=>String(+n).padStart(2,'0');
 const cv=v=>{if(v==null||v==='')return '';if(v instanceof Date){if(isNaN(v))return '';const d=new Date(v.getTime()+432e5),y=d.getFullYear();return y<2000?'':y+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}return typeof v==='number'?String(v):String(v).replace(/\s+/g,' ').trim()};
