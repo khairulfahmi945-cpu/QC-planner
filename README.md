@@ -1,4 +1,4 @@
-# QC Lookup 3D
+# QC Dashboard Status
 
 Single-file web app (`index.html`) for looking up quay crane (QC) maintenance status: PM 2026, PR / WO, work requests (with criticality), wirerope, inspection and oil sampling.
 
