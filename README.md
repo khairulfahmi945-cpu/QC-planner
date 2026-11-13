@@ -1,6 +1,6 @@
 # QC Lookup 3D
 
-Single-file web app (`index.html`) for looking up quay crane (QC) maintenance status: PM 2026, PR / WO, wirerope, inspection and oil sampling.
+Single-file web app (`index.html`) for looking up quay crane (QC) maintenance status: PM 2026, PR / WO, work requests (with criticality), wirerope, inspection and oil sampling.
 
 ## What's new
 - **Animated 3D quay crane** (three.js) in the home hero: a ship-to-shore crane discharges and loads a container between the vessel and a terminal truck, with neighbouring cranes working, waves, and a sunset sky. Drag to rotate.
