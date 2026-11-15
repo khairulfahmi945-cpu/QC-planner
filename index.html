@@ -249,10 +249,87 @@ label.btn{display:inline-flex;align-items:center;justify-content:center}
 /* ===== Page transitions ===== */
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.28s}
 #detail:not([hidden]) #dhead{animation:rise .4s backwards}
+/* ===== 2026 refresh: layout, theme toggle, insights ===== */
+:root{--sh:0 1px 2px rgba(14,36,48,.05),0 10px 28px -18px rgba(14,36,48,.35);--glow:rgba(15,116,121,.10)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sh:0 1px 0 rgba(255,255,255,.03) inset,0 14px 34px -20px rgba(0,0,0,.9);--glow:rgba(79,195,200,.09)}}
+:root[data-theme="dark"]{--sh:0 1px 0 rgba(255,255,255,.03) inset,0 14px 34px -20px rgba(0,0,0,.9);--glow:rgba(79,195,200,.09)}
+body{background:var(--bg) radial-gradient(900px 480px at 100% -10%,var(--glow),transparent 70%) no-repeat;transition:background-color .3s,color .3s}
+main{max-width:1120px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.bar h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.thm{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px 0 10px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font:600 14px Barlow,sans-serif;cursor:pointer;transition:background .2s,transform .12s;flex:none}
+.thm:hover{background:rgba(255,255,255,.16)}
+.thm:active{transform:scale(.96)}
+.thm svg{width:18px;height:18px;color:#F2B705}
+.thm .i-sun{display:none}
+.thm.is-dark .i-sun{display:block}
+.thm.is-dark .i-moon{display:none}
+.card,.pulse,.ai,.qc,.sug{box-shadow:var(--sh)}
+.card{border-radius:16px}
+.s-tl{background:var(--tl)}
+@media (min-width:900px){
+  .hero{min-height:500px;padding:26px 26px 22px}
+  .hero h2{font-size:40px}
+  .hero form{max-width:520px}
+  #stats{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:18px;align-items:start}
+  #stats .pulse{margin:0}
+  #stats .attn .ah{margin-top:0}
+  .banner{height:380px}
+  #panel{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;align-items:start}
+  #panel>.card{margin:0}
+  #panel>.seg,#panel>.more,#panel>.note,#panel>.empty{grid-column:1/-1;margin-bottom:0}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}
+}
+/* findings */
+.finds{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;margin:0 0 12px}
+.find{display:flex;gap:10px;align-items:flex-start;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:12px 14px;box-shadow:var(--sh);animation:rise .45s backwards;animation-delay:calc(var(--i,0)*60ms)}
+.find>i{flex:none;width:10px;height:10px;border-radius:50%;margin-top:6px}
+.find small{display:block;font:600 12px Barlow,sans-serif;letter-spacing:.8px;text-transform:uppercase;color:var(--mu)}
+.find p{margin:2px 0 0;font-size:16px;line-height:1.35}
+.find p b{font:700 20px "Barlow Semi Condensed",Barlow,sans-serif}
+/* insight cards */
+.igrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:12px;align-items:start}
+.igrid .card{margin:0;min-width:0}
+.igrid .wide{grid-column:1/-1}
+.ins .sub{margin:-2px 0 12px;color:var(--mu);font-size:14px}
+.ins h4{font:600 14px Barlow,sans-serif;margin:16px 0 8px;color:var(--mu)}
+.ins .cap{margin:10px 0 0;font-size:14px;color:var(--mu)}
+.vbars{display:flex;align-items:flex-end;gap:5px;height:170px;padding-top:18px;border-bottom:1px solid var(--ln)}
+.vb{flex:1 1 0;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative}
+.vb b{font:600 12px Barlow,sans-serif;color:var(--mu);font-variant-numeric:tabular-nums;margin-bottom:3px}
+.vb i{display:block;width:100%;max-width:30px;height:var(--h);min-height:2px;background:var(--tl);border-radius:5px 5px 0 0;transform-origin:bottom;animation:growy .8s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*45ms + .1s);position:relative;overflow:hidden}
+.vb.cur i{background:repeating-linear-gradient(135deg,var(--wn) 0 6px,transparent 6px 10px),var(--wnb);box-shadow:inset 0 0 0 1px var(--wn)}
+.vb span{position:absolute;bottom:-20px;font-size:12px;color:var(--mu)}
+.vbars{margin-bottom:22px}
+.vb i.st u{position:absolute;left:0;right:0;top:0;display:block}
+@keyframes growy{from{transform:scaleY(0)}}
+.money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.money b{display:block;font:700 22px/1.1 "Barlow Semi Condensed",Barlow,sans-serif;font-variant-numeric:tabular-nums}
+.money span{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--mu)}
+.money span i{width:8px;height:8px;border-radius:2px;flex:none}
+.hbars{display:grid;gap:8px}
+.hb{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n v" "m m";gap:3px 10px;font-size:14px}
+.hb span{grid-area:n;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb b{grid-area:v;font-variant-numeric:tabular-nums;font-weight:600}
+.hb .meter{grid-area:m;height:8px}
+.ropes{display:grid;gap:10px}
+.rp{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"id n v" "m m m" "s s s";gap:3px 10px;align-items:baseline;color:inherit;text-decoration:none;border-radius:8px;transition:transform .15s}
+.rp:hover{transform:translateX(3px)}
+.rp b{grid-area:id;font:700 18px "Barlow Semi Condensed",Barlow,sans-serif}
+.rp .rn{grid-area:n;color:var(--mu);font-size:14px;text-transform:capitalize;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rp .rv{grid-area:v;font-weight:600;font-variant-numeric:tabular-nums}
+.rp .meter{grid-area:m;height:8px}
+.rp small{grid-area:s;color:var(--mu);font-size:12px;font-variant-numeric:tabular-nums}
+.ft td,.ft th{padding:9px 10px;font-variant-numeric:tabular-nums}
+.ft tbody tr{transition:background .15s}
+.ft tbody tr:hover{background:var(--bg)}
+.tm{display:flex;align-items:center;gap:8px;min-width:120px}
+.tm .meter{flex:1;height:8px}
+.gauge{margin:4px 0 10px}
 </style>
 </head>
 <body>
-<header class="bar"><button id="back" hidden>&lsaquo; All cranes</button><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="#F2B705" stroke-width="2.2" stroke-linecap="round"><path d="M8 29V11M14 29V11M3 11h27M8 11l5-7 5 7M18 4l12 7"/><path d="M24 11v7" stroke-width="1.4"/></g><rect x="20.5" y="18" width="7" height="4" rx=".6" fill="#F2B705"/></svg><h1>QC DASHBOARD STATUS</h1><span class="live"><i></i>3D</span></header>
+<header class="bar"><button id="back" hidden>&lsaquo; All cranes</button><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="#F2B705" stroke-width="2.2" stroke-linecap="round"><path d="M8 29V11M14 29V11M3 11h27M8 11l5-7 5 7M18 4l12 7"/><path d="M24 11v7" stroke-width="1.4"/></g><rect x="20.5" y="18" width="7" height="4" rx=".6" fill="#F2B705"/></svg><h1>QC DASHBOARD STATUS</h1><button type="button" id="theme" class="thm" aria-label="Switch between light and dark mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-sun" d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0-5v3m0 14v3M2 12h3m14 0h3M4.9 4.9l2.1 2.1m10 10 2.1 2.1m0-14.2L17 7M7 17l-2.1 2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="i-moon" d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z" fill="currentColor"/></svg><span id="thl">Dark</span></button></header>
 <main>
 <section id="home">
 <div class="hero" id="hero"><svg class='scene' viewBox='0 0 400 320' preserveAspectRatio='xMidYMax slice' aria-hidden='true' focusable='false'><defs><linearGradient id='sk' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#0A2433'/><stop offset='.55' stop-color='#1F6070'/><stop offset='.74' stop-color='#F0B35C'/></linearGradient><linearGradient id='wt' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#14505E'/><stop offset='1' stop-color='#061922'/></linearGradient><linearGradient id='fd' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#051117' stop-opacity='0'/><stop offset='1' stop-color='#051117' stop-opacity='.72'/></linearGradient><radialGradient id='sn' cx='.5' cy='.5' r='.5'><stop offset='0' stop-color='#FFD27A' stop-opacity='.9'/><stop offset='1' stop-color='#FFD27A' stop-opacity='0'/></radialGradient><g id='qc' fill='none' stroke='#07141B'><path d='M114 242 118 96M124 242 126 96M184 242 190 96M196 242 198 96' stroke-width='3'/><path d='M118 150 190 122M126 200 196 150M118 200 190 160' stroke-width='1.4'/><rect x='112' y='86' width='90' height='14' fill='#07141B'/><path d='M130 86 160 36 190 86M160 36 160 86' stroke-width='2.6'/><path d='M196 90 350 94M196 99 350 98M54 94 118 90M54 98 118 99' stroke-width='2.4'/><path d='M200 92 214 99 228 92 242 99 256 92 270 99 284 92 298 99 312 92 326 99 340 93' stroke-width='.9'/><path d='M160 36 350 94M160 36 54 94' stroke-width='1'/><rect x='290' y='99' width='16' height='8' fill='#07141B'/><path d='M298 107V150' stroke-width='1'/><rect x='288' y='150' width='20' height='3' fill='#07141B'/><rect x='288' y='153' width='20' height='9' fill='#B5532F' stroke='none'/></g></defs><rect width='400' height='320' fill='url(#sk)'/><circle cx='292' cy='222' r='80' fill='url(#sn)'/><g opacity='.55'><rect x='8' y='222' width='34' height='16' fill='#6B3B2E'/><rect x='44' y='218' width='30' height='20' fill='#2F5C6B'/><rect x='76' y='224' width='38' height='14' fill='#8A6A2F'/><rect x='300' y='221' width='30' height='17' fill='#2F5C6B'/><rect x='332' y='217' width='34' height='21' fill='#6B3B2E'/><rect x='368' y='223' width='32' height='15' fill='#8A6A2F'/></g><rect y='236' width='400' height='84' fill='url(#wt)'/><g stroke='#F4C36A' stroke-opacity='.35' stroke-width='1.4'><path d='M250 246h80M270 254h60M290 262h40M240 272h90'/></g><g fill='#0A1B24'><path d='M236 236 252 222H400V236Z'/><rect x='258' y='206' width='130' height='16'/></g><g><rect x='262' y='208' width='22' height='14' fill='#9C3F2B'/><rect x='286' y='208' width='22' height='14' fill='#2F6C7C'/><rect x='310' y='208' width='22' height='14' fill='#C28A2A'/><rect x='334' y='208' width='22' height='14' fill='#9C3F2B'/><rect x='358' y='208' width='22' height='14' fill='#2F6C7C'/><rect x='272' y='194' width='22' height='14' fill='#2F6C7C'/><rect x='296' y='194' width='22' height='14' fill='#C28A2A'/><rect x='320' y='194' width='22' height='14' fill='#9C3F2B'/></g><path d='M0 238H212L222 250V320H0Z' fill='#0A1A22'/><path d='M0 238H212' stroke='#F2B705' stroke-width='1.2' stroke-dasharray='6 5'/><g opacity='.4'><use href='#qc' transform='translate(-60 111) scale(.5)'/></g><use href='#qc'/><g fill='#F2B705'><circle cx='160' cy='36' r='2.4'/><circle cx='350' cy='94' r='2'/><circle cx='54' cy='94' r='2'/></g><rect y='190' width='400' height='130' fill='url(#fd)'/></svg><div class="gl" id="gl1"></div><div class="shade"></div><span class="drag">Drag to rotate</span>
@@ -267,6 +344,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center}
 <p class="msg" id="msg" role="status"></p>
 <p class="upd" id="upd"></p>
 <div id="sug" aria-live="polite"></div>
+<div id="insights"></div>
 <div id="fleets"></div>
 <p class="asof" id="asof"></p>
 </section>
@@ -279,7 +357,7 @@ label.btn{display:inline-flex;align-items:center;justify-content:center}
 window.Q3D=(function(){
 'use strict';
 const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-let T3,R,S,sky,CAM,clock,main,others=[],water,wPos,wBase,box,boxMat,truck,label,lctx,ltex,apexLights=[],host=null,ro=null,io=null,raf=0,visible=true,failed=false;
+let TH={},stars,dark=false,T3,R,S,sky,CAM,clock,main,others=[],water,wPos,wBase,box,boxMat,truck,label,lctx,ltex,apexLights=[],host=null,ro=null,io=null,raf=0,visible=true,failed=false;
 const st={tz:-4,sy:22,tx:-130,boom:0,carry:'ship'};
 let queue=[],ph=null,mode='work',t0=0;
 const ZS=25.2,ZL=-2,SHIP_TOP=12.8,TRUCK_TOP=4.05,SAFE=22,PARK=-4;
@@ -309,16 +387,16 @@ function build(){
   S.fog=new T3.Fog(HOR,150,560);
   CAM=new T3.PerspectiveCamera(38,1.6,1,1500);cam.tgt=V(0,17,10);
   // lights
-  S.add(new T3.HemisphereLight(0xCFE4EE,0x3A2A1C,.75));
+  TH.hemi=new T3.HemisphereLight(0xCFE4EE,0x3A2A1C,.75);S.add(TH.hemi);
   const sun=new T3.DirectionalLight(0xFFD7A0,1.15);sun.position.set(-160,95,90);sun.castShadow=true;
   const sh=sun.shadow;sh.mapSize.set(2048,2048);sh.camera.left=-110;sh.camera.right=110;sh.camera.top=90;sh.camera.bottom=-90;sh.camera.near=10;sh.camera.far=420;sh.bias=-.0006;
   S.add(sun);S.add(sun.target);
-  const fill=new T3.DirectionalLight(0x8FC4D6,.35);fill.position.set(80,40,-120);S.add(fill);
+  const fill=new T3.DirectionalLight(0x8FC4D6,.35);fill.position.set(80,40,-120);S.add(fill);TH.sun=sun;TH.fill=fill;
   // sun disc + glow
   const gc=document.createElement('canvas');gc.width=gc.height=128;const gx=gc.getContext('2d'),rg=gx.createRadialGradient(64,64,0,64,64,64);
   rg.addColorStop(0,'rgba(255,240,200,1)');rg.addColorStop(.12,'rgba(255,214,130,.95)');rg.addColorStop(.4,'rgba(255,190,100,.25)');rg.addColorStop(1,'rgba(255,170,80,0)');
   gx.fillStyle=rg;gx.fillRect(0,0,128,128);const gt=new T3.CanvasTexture(gc);
-  const sunS=new T3.Sprite(new T3.SpriteMaterial({map:gt,fog:false,depthWrite:false,blending:T3.AdditiveBlending}));sunS.position.set(-420,45,150);sunS.scale.set(170,170,1);S.add(sunS);
+  const sunS=new T3.Sprite(new T3.SpriteMaterial({map:gt,fog:false,depthWrite:false,blending:T3.AdditiveBlending}));sunS.position.set(-420,45,150);sunS.scale.set(170,170,1);S.add(sunS);TH.sunS=sunS;
   // sun glitter on water
   const gl2=document.createElement('canvas');gl2.width=64;gl2.height=256;const g2=gl2.getContext('2d'),lg=g2.createLinearGradient(0,0,0,256);
   lg.addColorStop(0,'rgba(255,200,120,.0)');lg.addColorStop(.25,'rgba(255,200,120,.55)');lg.addColorStop(1,'rgba(255,200,120,0)');g2.fillStyle=lg;g2.fillRect(0,0,64,256);
@@ -488,6 +566,14 @@ function build(){
   for(const x of[-5,-3.8,8.6,7])for(const z of[-1,1]){const w=new T3.Mesh(wh,M.dark);w.position.set(x,.55,z);truck.add(w)}
   truck.position.z=ZL;
 
+  TH.glint=glint;TH.glass=M.glass;
+  // night extras: stars and a work-light glow under the boom
+  const sp=new Float32Array(900);for(let i=0;i<900;i+=3){const a=Math.random()*Math.PI*2,e=.08+Math.random()*1.2,r=900;sp[i]=Math.cos(a)*Math.cos(e)*r;sp[i+1]=Math.sin(e)*r;sp[i+2]=Math.sin(a)*Math.cos(e)*r}
+  const sg2=new T3.BufferGeometry();sg2.setAttribute('position',new T3.BufferAttribute(sp,3));
+  stars=new T3.Points(sg2,new T3.PointsMaterial({color:0xDCE9FF,size:2.2,sizeAttenuation:false,fog:false,transparent:true,opacity:.9,depthWrite:false}));stars.visible=false;S.add(stars);
+  TH.lamp=new T3.PointLight(0xFFE0A0,0,150,1.6);TH.lamp.position.set(0,27,18);S.add(TH.lamp);
+  TH.lamp2=new T3.PointLight(0xFFE0A0,0,120,1.6);TH.lamp2.position.set(10,24,-6);S.add(TH.lamp2);
+  applyTheme();
   clock=new T3.Clock();
   // pointer orbit
   const el=R.domElement;el.setAttribute('aria-hidden','true');
@@ -497,6 +583,20 @@ function build(){
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else start()});
 }
 
+function applyTheme(){
+  if(!R)return;const u=sky.material.uniforms,d=dark;
+  u.top.value.setHex(d?0x01040A:0x05182A);u.mid.value.setHex(d?0x071A2E:0x2B6B82);u.hor.value.setHex(d?0x16324A:0xE9AE6C);
+  S.fog.color.setHex(d?0x16324A:0xE9AE6C);
+  TH.hemi.intensity=d?.34:.75;TH.hemi.color.setHex(d?0x8FB4E0:0xCFE4EE);TH.hemi.groundColor.setHex(d?0x0A1420:0x3A2A1C);
+  TH.sun.intensity=d?.42:1.15;TH.sun.color.setHex(d?0xA9C6FF:0xFFD7A0);TH.fill.intensity=d?.12:.35;
+  TH.sunS.material.color.setHex(d?0xCFE0FF:0xFFFFFF);TH.sunS.scale.set(d?70:170,d?70:170,1);TH.sunS.position.y=d?120:45;
+  TH.glint.material.color.setHex(d?0x6F8FC0:0xFFFFFF);TH.glint.material.opacity=d?.5:1;
+  TH.glass.emissive.setHex(d?0xFFD98A:0x1B4A5A);TH.glass.emissiveIntensity=d?.9:.35;
+  TH.lamp.intensity=d?1.5:0;TH.lamp2.intensity=d?1.1:0;
+  water.material.color.setHex(d?0x0B2C40:0x165466);stars.visible=d;
+  u.sd.value.set(-420,d?120:45,150).normalize();
+}
+function setTheme(d){dark=!!d;applyTheme();if(R&&(RM||!raf))frame(0)}
 function drawLabel(id,sub,down){
   const c=lctx,w=512,h=192;c.clearRect(0,0,w,h);
   c.fillStyle='#0B2A3A';c.fillRect(0,0,w,h);
@@ -576,7 +676,7 @@ function mount(el,o){
   resize();stop();start();if(RM||!raf)frame(0);
   return true;
 }
-return{mount,get ok(){return !failed&&!!window.THREE}};
+return{mount,setTheme,get ok(){return !failed&&!!window.THREE}};
 })();
 </script>
 <script>
@@ -653,7 +753,7 @@ pr(c){
 },
 wr(c){
   const s=c.sany?'<article class="card"><h3>SANY wirerope update</h3><div class="chips">'+chip(c.sany.st)+'</div>'+dl(kv('Current moves',E(c.sany.cur)),kv('Item code',E(c.sany.item)))+'</article>':'';
-  const r=[...c.wr].reverse().map(x=>'<article class="card"><h3>'+E(x.j)+'</h3><div class="chips">'+chip(x.js)+chip(x.av)+'</div>'+dl(kv('Month',E(x.mo)),kv('Plan date',fd(x.pd)),kv('Current moves',E(x.cur)),kv('Recommended moves',E(x.rec)),kv('Over moves',x.over?E(x.over)+(x.pct?' ('+E(x.pct)+'%)':''):''),kv('WO',E(x.wo)),kv('PR',E(x.pr)),kv('CWO',E(x.cwo)),kv('Item code',E(x.item)))+'</article>').join('');
+  const r=[...c.wr].reverse().map(x=>'<article class="card"><h3>'+E(x.j)+'</h3><div class="chips">'+chip(x.js)+chip(x.av)+'</div>'+(()=>{const c=num(x.cur),r=num(x.rec);if(!c||!r)return '';const p=c/r*100;return '<div class="gauge"><div class="rt"><span>Rope life used</span><b>'+p.toFixed(1)+'%</b></div><div class="meter"><i class="'+ropeTone(p)+'" style="--w:'+Math.min(100,p).toFixed(1)+'%"></i></div></div>'})()+dl(kv('Month',E(x.mo)),kv('Plan date',fd(x.pd)),kv('Current moves',E(x.cur)),kv('Recommended moves',E(x.rec)),kv('Over moves',x.over?E(x.over)+(x.pct?' ('+E(x.pct)+'%)':''):''),kv('WO',E(x.wo)),kv('PR',E(x.pr)),kv('CWO',E(x.cwo)),kv('Item code',E(x.item)))+'</article>').join('');
   return s+r||empty('No wirerope records for this crane.');
 },
 ins(c){return c.fyk.length?'<article class="card"><h3>PMA / CF</h3>'+dl(kv('PMA no.',E(c.pma)),kv('Serial no.',E(c.serial)),kv('Expiry',fd(c.pmaExp)))+'</article><article class="card"><h3>Quarterly inspection</h3><div class="tbl"><table><thead><tr><th>Quarter</th><th>Actual</th><th>Next plan</th></tr></thead><tbody>'+c.fyk.map(x=>'<tr><td>'+x.q+'</td><td>'+(fd(x.a)||'&ndash;')+'</td><td>'+(fd(x.n)||'&ndash;')+'</td></tr>').join('')+'</tbody></table></div></article>':empty('No inspection record for this crane.')},
@@ -681,7 +781,60 @@ function draw(){
 }
 function gl(wrap,box,o){
   const ok=window.Q3D&&Q3D.mount($(box),o);
+  if(ok&&Q3D.setTheme)Q3D.setTheme(document.documentElement.dataset.theme?document.documentElement.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches);
   $(wrap).classList.toggle('has-gl',!!ok);
+}
+/* ===== Insights: charts built from the uploaded file ===== */
+const num=v=>{const n=parseFloat(String(v==null?'':v).replace(/,/g,''));return isNaN(n)?null:n};
+const myr=x=>/MYR/i.test(x.rm||'')?(num(String(x.rm).replace(/MYR/i,''))||0):0;
+const fmtM=v=>'MYR '+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'k':Math.round(v));
+const nf=v=>Number(v).toLocaleString('en-US');
+const allPR=()=>{const s=new Map();IDS.forEach(i=>D.qcs[i].pr.forEach(x=>s.set(x.wo+'|'+x.pr+'|'+x.j+'|'+x.d,x)));return [...s.values()]};
+const ropeList=()=>{const o=[];IDS.forEach(i=>D.qcs[i].wr.forEach(x=>{const c=num(x.cur),r=num(x.rec);if(/pend/i.test(x.js)&&c&&r)o.push({id:i,j:x.j.replace(/^Q\d+\s*:\s*/i,'').replace(/\s*WIREROPE REPLACEMENT/i,''),c,r,p:c/r*100})}));return o.sort((a,b)=>b.p-a.p)};
+const ropeTone=p=>p>=100?'s-bd':p>=90?'s-wn':'s-tl';
+function insights(all){
+  const m=curMon(),N=IDS.length,YR=String(D.built||'').slice(0,4);
+  /* PM by month */
+  const pmM=MON.map(k=>{const xs=all.map(c=>c.pm.find(x=>x.m===k)).filter(Boolean);return{k,n:xs.length,d:xs.filter(x=>pmState(x)==='done').length}}).filter(x=>x.n);
+  let streak=0;for(let i=pmM.length-1;i>=0;i--){if(pmM[i].k===m)continue;if(pmM[i].d===pmM[i].n)streak++;else break}
+  const pmC='<article class="card ins"><h3>PM completion by month</h3><p class="sub">Share of cranes with PM completed, '+YR+'</p><div class="vbars" role="img" aria-label="PM completion by month">'
+    +pmM.map((x,i)=>{const p=Math.round(x.d/x.n*100);return '<div class="vb'+(x.k===m?' cur':'')+'" title="'+MN[x.k]+': '+x.d+' of '+x.n+' cranes"><b>'+p+'</b><i style="--h:'+p+'%;--i:'+i+'"></i><span>'+x.k+'</span></div>'}).join('')+'</div>'
+    +'<p class="cap">'+(m?MN[m]+' is still in progress. ':'')+(streak>1?'The '+streak+' months before it finished at 100%.':'')+'</p></article>';
+  /* PR / WO value */
+  const pr=allPR(),grp=x=>/complete|clos|done/i.test(x.st)?'done':/cancel|return/i.test(x.st)?'x':/^open$/i.test(x.st)?'open':'plan';
+  const v={done:0,open:0,plan:0,x:0};pr.forEach(x=>{v[grp(x)]+=myr(x)});const vt=v.done+v.open+v.plan||1;
+  const ven={};pr.filter(x=>String(x.d).slice(0,4)===YR&&x.v&&grp(x)!=='x').forEach(x=>{ven[x.v]=(ven[x.v]||0)+myr(x)});
+  const top=Object.entries(ven).sort((a,b)=>b[1]-a[1]).slice(0,5),vmax=top.length?top[0][1]:1;
+  const wait=pr.filter(x=>/waiting crane/i.test(x.ps)).length;
+  const prC='<article class="card ins"><h3>PR / WO value</h3><p class="sub">'+nf(pr.length)+' jobs in the file</p><div class="money"><div><b>'+fmtM(v.done)+'</b><span><i class="s-ok"></i>Completed</span></div><div><b>'+fmtM(v.open)+'</b><span><i class="s-wn"></i>Open</span></div><div><b>'+fmtM(v.plan)+'</b><span><i class="s-tl"></i>In plan / progress</span></div></div>'
+    +'<div class="meter">'+[[v.done,'s-ok'],[v.open,'s-wn'],[v.plan,'s-tl']].map(([a,c])=>a?'<i class="'+c+'" style="--w:'+(a/vt*100).toFixed(2)+'%"></i>':'').join('')+'</div>'
+    +(top.length?'<h4>Top vendors by value, '+YR+'</h4><div class="hbars">'+top.map(([n,a],i)=>'<div class="hb"><span title="'+E(n)+'">'+E(n)+'</span><div class="meter"><i class="s-tl" style="--w:'+(a/vmax*100).toFixed(1)+'%"></i></div><b>'+fmtM(a)+'</b></div>').join('')+'</div>':'')
+    +(wait?'<p class="cap">'+wait+' jobs are waiting for crane availability.</p>':'')+'</article>';
+  /* work requests per month */
+  const wq=all.flatMap(wqOf),by={};wq.forEach(x=>{const k=String(x.d).slice(0,7);if(k.slice(0,4)!==YR)return;(by[k]=by[k]||{o:0,c:0})[wqOpen(x)?'o':'c']++});
+  const wm=Object.keys(by).sort(),wmax=Math.max(1,...wm.map(k=>by[k].o+by[k].c));
+  const wqC=wm.length?'<article class="card ins"><h3>Work requests raised per month</h3><p class="sub">'+nf(wq.length)+' requests, '+wq.filter(wqOpen).length+' still open</p><div class="vbars stack" role="img" aria-label="Work requests raised per month">'
+    +wm.map((k,i)=>{const o=by[k].o,c=by[k].c;return '<div class="vb" title="'+MN[MON[+k.slice(5)-1]]+': '+(o+c)+' raised, '+o+' still open"><b>'+(o+c)+'</b><i class="st" style="--h:'+((o+c)/wmax*100).toFixed(1)+'%;--i:'+i+'"><u class="s-wn" style="height:'+(o/(o+c)*100).toFixed(1)+'%"></u></i><span>'+MON[+k.slice(5)-1]+'</span></div>'}).join('')+'</div>'
+    +'<div class="lg"><span><i class="s-tl"></i>Closed</span><span><i class="s-wn"></i>Still open</span></div></article>':'';
+  /* wirerope */
+  const rp=ropeList().slice(0,6);
+  const rpC=rp.length?'<article class="card ins"><h3>Wirerope closest to its limit</h3><p class="sub">Pending replacements, current moves against recommended moves</p><div class="ropes">'
+    +rp.map(x=>'<a class="rp" href="#'+x.id+'"><b>'+x.id+'</b><span class="rn">'+E(x.j.toLowerCase())+'</span><span class="rv">'+x.p.toFixed(1)+'%</span><div class="meter"><i class="'+ropeTone(x.p)+'" style="--w:'+Math.min(100,x.p).toFixed(1)+'%"></i></div><small>'+nf(x.c)+' of '+nf(x.r)+' moves</small></a>').join('')+'</div></article>':'';
+  /* fleet table */
+  const fg={};IDS.forEach(i=>{const c=D.qcs[i];(fg[c.fleet||'Other']=fg[c.fleet||'Other']||[]).push(c)});
+  const flC='<article class="card ins wide"><h3>Fleet comparison</h3><p class="sub">Each crane batch side by side</p><div class="tbl"><table class="ft"><thead><tr><th>Fleet</th><th>Cranes</th><th>Down</th><th>PM '+(m||'')+' done</th><th>Open WR</th><th>P1</th><th>Open PR / WO</th></tr></thead><tbody>'
+    +Object.entries(fg).map(([f,a])=>{const d=a.filter(c=>pmNow(c,m)==='done').length,dn=a.filter(isDown).length,ow=a.reduce((n,c)=>n+wqOf(c).filter(wqOpen).length,0),p1=a.reduce((n,c)=>n+wqOf(c).filter(x=>wqOpen(x)&&crit(x)===1).length,0),op=a.reduce((n,c)=>n+c.pr.filter(isOpen).length,0);
+      return '<tr><td><b>'+E(f)+'</b></td><td>'+a.length+'</td><td>'+(dn?'<span class="chip bad">'+dn+'</span>':'0')+'</td><td><div class="tm"><div class="meter"><i class="s-ok" style="--w:'+(d/a.length*100).toFixed(0)+'%"></i></div>'+d+'/'+a.length+'</div></td><td>'+ow+'</td><td>'+(p1?'<span class="chip bad">'+p1+'</span>':'0')+'</td><td>'+op+'</td></tr>'}).join('')+'</tbody></table></div></article>';
+  /* headline findings */
+  const ow=wq.filter(wqOpen),old=ow.filter(x=>/^\d{4}-\d\d-\d\d$/.test(x.d)).sort((a,b)=>a.d.localeCompare(b.d))[0],p1=ow.filter(x=>crit(x)===1).length;
+  const pd=all.filter(c=>pmNow(c,m)==='done').length,exp=all.filter(c=>pmaState(c)==='exp').length,r0=ropeList()[0];
+  const F=[];
+  if(m)F.push(['s-ok','PM '+MN[m],'<b>'+Math.round(pd/N*100)+'%</b> done, '+(N-pd)+' cranes to go'+(streak>1?'. '+streak+' months in a row at 100% before this.':'.')]);
+  if(ow.length)F.push([p1?'s-bd':'s-wn','Work requests','<b>'+ow.length+'</b> open'+(p1?', '+p1+' at P1':'')+(old?'. Oldest is '+Math.round((T-new Date(old.d))/864e5)+' days old.':'.')]);
+  if(v.open)F.push(['s-wn','PR / WO','<b>'+fmtM(v.open)+'</b> of jobs still open'+(wait?', '+wait+' waiting for a crane.':'.')]);
+  if(r0)F.push([ropeTone(r0.p),'Wirerope','<b>'+r0.id+'</b> '+E(r0.j.toLowerCase())+' rope is at '+r0.p.toFixed(1)+'% of its move limit.']);
+  if(exp)F.push(['s-bd','PMA / CF','<b>'+exp+'</b> certificates show as expired.']);
+  return '<div class="fhead"><h2>Insights</h2><span class="key">From '+E(D.src)+'</span></div><div class="finds">'+F.map((f,i)=>'<div class="find" style="--i:'+i+'"><i class="'+f[0]+'"></i><div><small>'+f[1]+'</small><p>'+f[2]+'</p></div></div>').join('')+'</div><div class="igrid">'+pmC+prC+wqC+rpC+flC+'</div>';
 }
 function attention(all){
   const a=all.map((c,i)=>({id:IDS[i],c,r:why(c)})).filter(x=>x.r.length).sort((x,y)=>(isDown(y.c)-isDown(x.c))||((topCrit(x.c)===1?0:1)-(topCrit(y.c)===1?0:1))||(y.r.length-x.r.length));
@@ -698,7 +851,7 @@ function count(el,n){
   const t0=performance.now(),d=900;(function f(t){const p=Math.min(1,(t-t0)/d);el.textContent=Math.round(n*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0);
 }
 function home(){
-  const none=!D;$('#stats').hidden=none;$('#exall').hidden=none;$('#upd').hidden=none;$('#asof').hidden=none;
+  const none=!D;$('#insights').hidden=none;if(none)$('#insights').innerHTML='';$('#stats').hidden=none;$('#exall').hidden=none;$('#upd').hidden=none;$('#asof').hidden=none;
   if(none){$('#fleets').innerHTML='<article class="card empty-state"><h3>No data loaded yet</h3><p>'+(!canUp()?'Waiting for an editor to upload the latest <b>LIVE UPDATE</b> file. It appears here automatically.':SH.db?'Tap <b>Upload live update file</b> and choose the latest <b>LIVE UPDATE</b> Excel file (.xlsx). Everyone who opens this page sees it straight away. Upload a newer file any time to replace it.':'Tap <b>Upload live update file</b> and choose the latest <b>LIVE UPDATE</b> Excel file (.xlsx). The page saves it on this device and opens it automatically next time. Upload a newer file any time to replace it.')+'</p></article>';$('#stats').innerHTML='';return}
   const g={};IDS.forEach(i=>{(g[D.qcs[i].fleet||'Other']=g[D.qcs[i].fleet||'Other']||[]).push(i)});
   let n=0;
@@ -725,6 +878,7 @@ function home(){
    +'</div></section>'
    +attention(all);
   document.querySelectorAll('#stats b[data-n]').forEach(b=>count(b,+b.dataset.n));
+  $('#insights').innerHTML=insights(all);
   $('#asof').textContent='Source file: '+D.src+'.';$('#upd').innerHTML='Data from <b>'+E(D.src)+'</b>, uploaded <b>'+upd()+'</b>.'+(SH.db?' Shared with everyone who opens this page.':' Saved on this device only.');
 }
 function matches(v){
@@ -744,7 +898,7 @@ function route(){
 }
 $('#q').addEventListener('input',e=>{
   const m=matches(e.target.value),has=!!e.target.value.trim();
-  $('#fleets').hidden=has;$('#asof').hidden=has;$('#tools').hidden=has;$('#stats').hidden=has;
+  $('#fleets').hidden=has;$('#asof').hidden=has;$('#tools').hidden=has;$('#stats').hidden=has;$('#insights').hidden=has||!D;
   $('#sug').innerHTML=!has?'':!D?empty('Upload the live update file first.'):m.length?m.map(i=>{const c=D.qcs[i];return '<a class="sug" href="#'+i+'"><b>'+i+'</b><span>'+E(c.fleet)+'</span>'+chip(stOf(c))+'</a>'}).join(''):empty('No crane found. Check the number and try again.');
 });
 $('#f').addEventListener('submit',e=>{e.preventDefault();const m=matches($('#q').value);if(m.length)location.hash=m[0]});
@@ -873,7 +1027,14 @@ async function shared(){
     catch(_){SH.loading=null;say('Could not load the latest shared data. Reload the page to try again.','bad')}
   },()=>{clearTimeout(tm);SH.got=true;say('Shared data is unavailable right now.'+(D?' Showing the copy saved on this device.':''),'bad')});
 }
-home();route();
+/* ===== Light / dark mode ===== */
+const RT=document.documentElement,isDark=()=>RT.dataset.theme?RT.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+function syncTheme(){const d=isDark();$('#theme').classList.toggle('is-dark',d);$('#thl').textContent=d?'Light':'Dark';$('#theme').setAttribute('aria-pressed',d);if(window.Q3D&&Q3D.setTheme)Q3D.setTheme(d)}
+$('#theme').addEventListener('click',()=>{const t=isDark()?'light':'dark';try{localStorage.setItem('qcTheme',t)}catch(_){}swap(()=>{RT.dataset.theme=t;syncTheme()})});
+try{const t=localStorage.getItem('qcTheme');if(t==='light'||t==='dark')RT.dataset.theme=t}catch(_){}
+new MutationObserver(syncTheme).observe(RT,{attributes:true,attributeFilter:['data-theme']});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',syncTheme);
+home();route();syncTheme();
 shared();
 DB.get().then(s=>{if(s&&s.qcs&&!D){D=s;IDS=Object.keys(s.qcs);home();route()}});
 </script>
