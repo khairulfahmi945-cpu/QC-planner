@@ -1,0 +1,29 @@
+</head>
+<body>
+<header class="bar"><button id="back" type="button" hidden>&lsaquo; Back</button><a class="brand" href="#" aria-label="Home"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="#F2B705" stroke-width="2.2" stroke-linecap="round"><path d="M8 29V11M14 29V11M3 11h27M8 11l5-7 5 7M18 4l12 7"/><path d="M24 11v7" stroke-width="1.4"/></g><rect x="20.5" y="18" width="7" height="4" rx=".6" fill="#F2B705"/></svg></a><h1>QC DASHBOARD STATUS</h1>
+<nav class="nav" id="nav" aria-label="Pages">
+<a href="#" data-n="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5H10V14h4v5.5h4.5V10"/></svg><span>Home</span></a>
+<a href="#attention" data-n="attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span>Alerts</span><i class="badge" id="nbadge" hidden></i></a>
+<a href="#pm" data-n="insights" id="nins"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5M3 20h18"/></svg><span>Insights</span></a>
+<a href="#cranes" data-n="cranes"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg><span>Cranes</span></a>
+<a href="#data" data-n="data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M5 15v4.5h14V15"/></svg><span>Data</span></a>
+</nav>
+<button type="button" id="theme" class="thm" aria-label="Switch between light and dark mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-sun" d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0-5v3m0 14v3M2 12h3m14 0h3M4.9 4.9l2.1 2.1m10 10 2.1 2.1m0-14.2L17 7M7 17l-2.1 2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="i-moon" d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z" fill="currentColor"/></svg><span id="thl">Dark</span></button></header>
+<main>
+<section id="home">
+<div class="hero" id="hero">__SVG__<div class="gl" id="gl1"></div><div class="shade"></div><span class="drag">Drag to rotate</span>
+<div class="top"><div class="eyebrow">Quay crane maintenance</div><h2>Port of Tanjung Pelepas</h2></div>
+<form id="f" autocomplete="off">
+<label class="big" for="q">Crane number</label>
+<div class="field"><b aria-hidden="true">Q</b><input id="q" inputmode="numeric" pattern="[0-9]*" enterkeyhint="go" placeholder="45" aria-describedby="h"></div>
+<p class="hint" id="h">Type the number only. 45 opens Q45.</p>
+</form></div>
+<div id="sug" aria-live="polite"></div>
+<div id="homebody"></div>
+</section>
+<section id="view" hidden></section>
+<section id="detail" hidden><div id="dhead"></div><div id="dbody"></div></section>
+<input type="file" id="file" class="vh" tabindex="-1" aria-hidden="true" accept=".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12,application/vnd.ms-excel">
+</main>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
