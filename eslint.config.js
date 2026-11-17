@@ -19,4 +19,6 @@ export default [
   // The 3D scene is one long procedural build function; splitting it would not make it clearer.
   { files: ['src/js/scene/crane-scene.js'], rules: { complexity: 'off' } },
   { files: ['scripts/**', 'tests/**'], languageOptions: { globals: { ...globals.node } } },
+  // Code passed to page.evaluate() runs in the browser.
+  { files: ['tests/e2e/**'], languageOptions: { globals: { ...globals.browser } } },
 ];

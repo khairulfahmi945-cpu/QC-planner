@@ -41,22 +41,44 @@ Two things the reader corrects:
 
 ## Changing the page
 
-The source is in `src/`. `index.html` is built from it.
+The source is in `src/`. `index.html` (the whole app in one file) is built from it with esbuild.
 
 ```
-python3 build.py              # writes index.html
-python3 build.py --artifact   # also writes build/artifact.html for claude.ai
+npm install        # once
+npm run build      # writes index.html, and dist/artifact.html for claude.ai
+npm run build:dev  # same, unminified
+npm run lint
+npm test           # unit tests, then browser tests (Playwright; includes an axe accessibility check)
+npm run check      # lint, build and test
 ```
 
-| File | Contents |
-| --- | --- |
-| `src/a1_core.js` | Storage, helpers and the fleet-wide calculations every page shares |
-| `src/a2_crane.js` | The page for one crane |
-| `src/a3_pages.js` | Home, Alerts, the Insights topics, Cranes and Data |
-| `src/a4_io.js` | Reading the Excel file, export, upload and shared storage |
-| `src/a5_app.js` | Navigation between pages, events, light / dark mode |
-| `src/crane3d.js` | The 3D quay crane scene (three.js) |
-| `src/base.css`, `src/app.css` | Styles |
-| `src/head.html`, `src/body.html` | Page shell |
+The browser tests open the built `index.html` offline with a small made-up dataset (`tests/fixtures/dataset.js`). No real port data is in this repository, and none should be added.
+
+### Structure
+
+```
+src/
+  index.html          Page shell (header, navigation, empty areas the pages draw into)
+  styles/             tokens (colour, type, space, motion) -> base -> layout -> components -> hero -> pages -> motion
+  js/
+    main.js           Entry point
+    app.js            Connects buttons, search, upload and storage to the code behind them
+    router.js         Which page shows for the address (#pm, #Q45, ...)
+    config.js         Names, thresholds and storage keys in one place
+    lib/              Small tools with no knowledge of cranes: html template, formatting, dates, theme
+    domain/           Plain functions that answer questions about the data: crane status, alerts,
+                      work request priority, wirerope wear, PM months, fleet summary
+    data/             Reading the Excel file, saving it in the browser, sharing it, exporting
+    ui/               Reusable pieces: chips, cards, rows, tables, meters and charts
+    pages/            Home, Alerts, Cranes, Data, the Insights topics, and one crane with its tabs
+    scene/            The 3D quay crane (three.js, loaded only when a scene is on screen)
+```
+
+Rules the code follows:
+
+- **Pages draw, the domain decides.** A page asks `domain/` for numbers and passes them to `ui/` pieces; thresholds and rules live in one place.
+- **Text is escaped by default.** Pages build markup with the `html` template tag, which escapes every value. Use `raw()` only for markup the code itself made.
+- **Colours and sizes come from `styles/tokens.css`.** Components do not hold literal colours, so light and dark stay in step.
+- **Libraries load when needed.** SheetJS loads when someone uploads or exports; three.js loads after the page is idle and only when a 3D scene is on screen (skipped on data saver and slow connections).
 
 The page needs internet for three.js (the 3D scene) and SheetJS (reading and writing Excel). Without 3D support it shows a drawn picture instead. It respects the reduced-motion setting.
