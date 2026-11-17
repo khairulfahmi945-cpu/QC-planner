@@ -33,6 +33,7 @@ h2 { font-size: 19px; font-weight: 700; margin: 22px 0 8px; }
 
 button, input { font: inherit; color: inherit; }
 a { color: var(--color-accent); }
+main:focus { outline: 0; }
 dl { margin: 0; }
 dt { color: var(--color-muted); flex: none; }
 dd { margin: 0; text-align: right; overflow-wrap: anywhere; }

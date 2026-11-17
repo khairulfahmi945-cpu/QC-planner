@@ -90,6 +90,7 @@ function refreshChrome() {
     navKey: navKeyFor(state.page),
     lastTopic: state.lastTopic,
     title: onCrane ? `${craneView.id} · ${getCrane(craneView.id).fleet || 'Crane'}` : '',
+    pageName: onCrane ? craneView.id : state.page !== 'home' && $('#view h2')?.textContent,
     showBack: onCrane,
     alertCount: hasDataset() ? getAlertSummary().redCount : 0,
   });
@@ -126,7 +127,11 @@ export function route(navigated) {
   }
 
   refreshChrome();
-  if (navigated) restoreScroll(previous);
+  if (navigated) {
+    restoreScroll(previous);
+    // Keyboard and screen-reader focus follows the reader to the new page.
+    $('main').focus({ preventScroll: true });
+  }
 }
 
 /** Redraws the page the reader is on, with no entrance animation (filters, "show more"). */

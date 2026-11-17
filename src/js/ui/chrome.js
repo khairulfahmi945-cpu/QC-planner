@@ -3,9 +3,9 @@ import { APP_NAME } from '../config.js';
 import { $, $$ } from '../lib/dom.js';
 
 /**
- * @param {{navKey: string, lastTopic: string, title?: string, showBack: boolean, alertCount: number}} state
+ * @param {{navKey: string, lastTopic: string, title?: string, pageName?: string, showBack: boolean, alertCount: number}} state
  */
-export function updateChrome({ navKey, lastTopic, title, showBack, alertCount }) {
+export function updateChrome({ navKey, lastTopic, title, pageName, showBack, alertCount }) {
   for (const link of $$('#nav a')) {
     if (link.dataset.n === navKey) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
@@ -19,6 +19,8 @@ export function updateChrome({ navKey, lastTopic, title, showBack, alertCount })
 
   $('#back').hidden = !showBack;
   $('.bar h1').textContent = title || APP_NAME;
+  // The tab title names the page, so history and screen readers can tell pages apart.
+  document.title = pageName ? `${pageName} · ${APP_NAME}` : APP_NAME;
 }
 
 /** Shows which theme the button will switch to. */
