@@ -16,5 +16,7 @@ export default [
     },
   },
   { files: ['src/**/*.js'], languageOptions: { globals: { ...globals.browser } } },
+  // The 3D scene is one long procedural build function; splitting it would not make it clearer.
+  { files: ['src/js/scene/crane-scene.js'], rules: { complexity: 'off' } },
   { files: ['scripts/**', 'tests/**'], languageOptions: { globals: { ...globals.node } } },
 ];

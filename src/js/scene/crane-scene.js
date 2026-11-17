@@ -2,14 +2,16 @@
 export const Q3D=(function(){
 'use strict';
 const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-let TH={},stars,dark=false,T3,R,S,sky,CAM,clock,main,others=[],water,wPos,wBase,box,boxMat,truck,label,lctx,ltex,apexLights=[],host=null,ro=null,io=null,raf=0,visible=true,failed=false;
+const TH={};
+const others=[],apexLights=[];
+let stars,dark=false,T3,R,S,sky,CAM,clock,main,water,wPos,wBase,box,boxMat,truck,lctx,ltex,host=null,ro=null,io=null,raf=0,visible=true,failed=false;
 const st={tz:-4,sy:22,tx:-130,boom:0,carry:'ship'};
-let queue=[],ph=null,mode='work',t0=0;
+let queue=[],ph=null,mode='work';
 const ZS=25.2,ZL=-2,SHIP_TOP=12.8,TRUCK_TOP=4.05,SAFE=22,PARK=-4;
 const BOXC=[0xE4572E,0x2F6C7C,0xC28A2A,0x9C3F2B,0x3B7A4A,0x1F4E79];
 const cam={t0:0,th:0,ph:0,dth:0,dph:0,r:100,tgt:null,drag:null};
 
-function webgl(){try{const c=document.createElement('canvas');return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')))}catch(e){return false}}
+function webgl(){try{const c=document.createElement('canvas');return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')))}catch{return false}}
 
 function init(){
   if(R)return true;
@@ -100,7 +102,7 @@ function build(){
     const fl=new T3.MeshBasicMaterial({color:0xFFF1C2});
     for(const z of[14,30,44])add(new T3.Mesh(new T3.BoxGeometry(1.2,.3,.7),fl),0,-1.4,z,out);
     // A-frame
-    const apex=V(0,49,-5);
+    
     for(const s of[-1,1]){
       const a=rod(.5,M.steel);place(a,V(s*8.6,28.6,-8),V(s*2.6,49,-5));g.add(a);
       const b=rod(.42,M.steel);place(b,V(s*8.6,28.6,8),V(s*2.6,49,-5));g.add(b);
@@ -135,24 +137,24 @@ function build(){
     add(box3(12.2,.6,2.6,M.yel),0,.3,0,sp);add(box3(3.4,1,1.9,M.dark),0,1.1,0,sp);
     for(const x of[-6,6])add(box3(.4,.7,2.6,M.dark),x,.2,0,sp);
     // ropes
-    const rg=new T3.BufferGeometry();rg.setAttribute('position',new T3.BufferAttribute(new Float32Array(48),3));
-    const ropes=new T3.LineSegments(rg,M.line);ropes.frustumCulled=false;g.add(ropes);
+    const ropeGeo=new T3.BufferGeometry();ropeGeo.setAttribute('position',new T3.BufferAttribute(new Float32Array(48),3));
+    const ropes=new T3.LineSegments(ropeGeo,M.line);ropes.frustumCulled=false;g.add(ropes);
     const H=V(0,0,0),A=V(0,0,0);
     return{g,tr,sp,bc,update(tz,sy,boom){
       const a=boom*Math.PI/180;out.rotation.x=-a;
       for(const o of fs){H.set(o.s*4,30.5+1.3*Math.cos(a)+o.L*Math.sin(a),8+o.L*Math.cos(a)-1.3*Math.sin(a));A.set(o.s*2.6,49,-5);place(o.f,A,H)}
       tr.position.z=tz;sp.position.set(0,sy,tz);
-      const p=rg.attributes.position.array;let i=0;
+      const p=ropeGeo.attributes.position.array;let i=0;
       for(const sx of[-1,1])for(const sz of[-1,1])for(const dz of[-.25,.25]){
         p[i++]=sx*2.4;p[i++]=31.2;p[i++]=tz+sz*.9+dz;
         p[i++]=sx*1.2+sx*.2;p[i++]=sy+1.6;p[i++]=tz+sz*.6+dz;
       }
-      rg.attributes.position.needsUpdate=true;
+      ropeGeo.attributes.position.needsUpdate=true;
     }};
   }
 
   main=mkCrane(true);S.add(main.g);
-  for(const [x,ph] of[[-50,1.7],[-100,4.1]]){const c=mkCrane(false);c.g.position.x=x;c.ph=ph;S.add(c.g);others.push(c)}
+  for(const [x,phase] of[[-50,1.7],[-100,4.1]]){const c=mkCrane(false);c.g.position.x=x;c.ph=phase;S.add(c.g);others.push(c)}
 
   // quay apron
   const q=box3(1600,8,420,M.quay);q.position.set(0,-4,-198);q.castShadow=false;S.add(q);
@@ -271,7 +273,7 @@ function step(dt){
   for(const k in ph.to)st[k]=ph.from[k]+(ph.to[k]-ph.from[k])*e;
   if(p>=1){const f=ph.fn;ph=null;if(f)f()}
 }
-function place(){
+function placeCamera(){
   main.update(st.tz,st.sy,st.boom);
   truck.position.x=st.tx;
   if(st.carry==='ship')box.position.set(0,SHIP_TOP-1.3,ZS);
@@ -281,7 +283,7 @@ function place(){
 function frame(dt){
   const t=clock?clock.elapsedTime:0;
   if(!RM)step(Math.min(dt,.1));
-  place();
+  placeCamera();
   for(const c of others){const k=t*.22+c.ph;c.update(13+16*Math.sin(k),19+6*Math.sin(k*1.7+1),0)}
   const blink=(Math.sin(t*4)>0)?1:.15;apexLights.forEach(l=>{l.material.color.setRGB(blink,blink*.16,blink*.1)});
   if(mode==='work'){main.bc.material.color.setHex(Math.sin(t*6)>0?0xFFB000:0x553300)}
