@@ -1,6 +1,5 @@
-<script>
 /* Q3D: animated 3D ship-to-shore quay crane scene (three.js r128). */
-window.Q3D=(function(){
+export const Q3D=(function(){
 'use strict';
 const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 let TH={},stars,dark=false,T3,R,S,sky,CAM,clock,main,others=[],water,wPos,wBase,box,boxMat,truck,label,lctx,ltex,apexLights=[],host=null,ro=null,io=null,raf=0,visible=true,failed=false;
@@ -324,4 +323,3 @@ function mount(el,o){
 }
 return{mount,setTheme,get ok(){return !failed&&!!window.THREE}};
 })();
-</script>

@@ -1,3 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>QC Dashboard Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<!-- build:css -->
 </head>
 <body>
 <header class="bar"><button id="back" type="button" hidden>&lsaquo; Back</button><a class="brand" href="#" aria-label="Home"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="#F2B705" stroke-width="2.2" stroke-linecap="round"><path d="M8 29V11M14 29V11M3 11h27M8 11l5-7 5 7M18 4l12 7"/><path d="M24 11v7" stroke-width="1.4"/></g><rect x="20.5" y="18" width="7" height="4" rx=".6" fill="#F2B705"/></svg></a><h1>QC DASHBOARD STATUS</h1>
@@ -11,7 +22,7 @@
 <button type="button" id="theme" class="thm" aria-label="Switch between light and dark mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-sun" d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0-5v3m0 14v3M2 12h3m14 0h3M4.9 4.9l2.1 2.1m10 10 2.1 2.1m0-14.2L17 7M7 17l-2.1 2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="i-moon" d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z" fill="currentColor"/></svg><span id="thl">Dark</span></button></header>
 <main>
 <section id="home">
-<div class="hero" id="hero">__SVG__<div class="gl" id="gl1"></div><div class="shade"></div><span class="drag">Drag to rotate</span>
+<div class="hero" id="hero"><!-- build:hero-fallback --><div class="gl" id="gl1"></div><div class="shade"></div><span class="drag">Drag to rotate</span>
 <div class="top"><div class="eyebrow">Quay crane maintenance</div><h2>Port of Tanjung Pelepas</h2></div>
 <form id="f" autocomplete="off">
 <label class="big" for="q">Crane number</label>
@@ -25,5 +36,6 @@
 <section id="detail" hidden><div id="dhead"></div><div id="dbody"></div></section>
 <input type="file" id="file" class="vh" tabindex="-1" aria-hidden="true" accept=".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12,application/vnd.ms-excel">
 </main>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- build:js -->
+</body>
+</html>
