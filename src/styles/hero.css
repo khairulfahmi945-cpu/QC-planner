@@ -1,0 +1,133 @@
+/* The 3D hero on Home and the banner on a crane page, plus the search form that sits over the hero. */
+
+.hero, .banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  margin: 0 0 14px;
+  border-radius: var(--radius-xl);
+  color: var(--color-on-photo);
+  box-shadow: var(--shadow-hero);
+  isolation: isolate;
+}
+.hero { min-height: 420px; padding: 18px var(--space-5) var(--space-5); background: var(--color-bar-start); }
+.banner {
+  height: 270px;
+  background: radial-gradient(120% 90% at 70% 100%, #F0B35C 0, #1F6070 48%, #0A2433 100%);
+}
+.hero > :not(.scene) { position: relative; }
+.hero h2 { margin: 0; font-size: 30px; line-height: 1.1; text-shadow: 0 1px 8px rgba(0, 0, 0, .5); text-wrap: balance; }
+.hero .top { pointer-events: none; }
+.hero label.big { color: var(--color-on-photo); text-shadow: var(--shadow-text); }
+.hero .hint { margin: var(--space-3) 2px 0; color: var(--color-on-photo-muted); text-shadow: var(--shadow-text); }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+  color: var(--color-yellow);
+  font: 600 var(--text-xs) var(--font-body);
+  letter-spacing: 1.2px;
+  text-shadow: var(--shadow-text);
+  text-transform: uppercase;
+}
+.eyebrow::before { content: ""; width: 18px; height: 2px; border-radius: var(--radius-2xs); background: var(--color-yellow); }
+
+/* Layers: still picture (.scene), live 3D canvas (.gl), darkening gradient (.shade), drag hint. */
+.scene { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .9s; }
+.has-gl > .scene { opacity: 0; }
+.hero > .gl, .hero > .shade, .banner > .gl, .banner > .shade { position: absolute; inset: 0; }
+.gl { opacity: 0; transition: opacity .9s; }
+.has-gl > .gl { opacity: 1; }
+.gl canvas { display: block; width: 100% !important; height: 100% !important; touch-action: pan-y; cursor: grab; outline: 0; }
+.gl canvas:active { cursor: grabbing; }
+.shade {
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(5, 17, 23, .6) 0, rgba(5, 17, 23, 0) 26%, rgba(5, 17, 23, 0) 52%, rgba(5, 17, 23, .82) 100%);
+}
+.drag {
+  display: none;
+  padding: var(--space-1) 10px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: var(--radius-pill);
+  background: rgba(8, 26, 35, .5);
+  color: #E6EFF2;
+  font: 600 var(--text-xs) var(--font-body);
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.hero > .drag, .banner > .drag { position: absolute; top: var(--space-4); right: var(--space-4); }
+.has-gl > .drag { display: block; }
+
+/* Search form over the hero. */
+label.big { display: block; margin-bottom: var(--space-3); font-size: 18px; font-weight: 600; }
+.hero form {
+  padding: var(--space-4) var(--space-4) 10px;
+  border: 1px solid var(--color-glass-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-glass);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+}
+.field {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 2px solid var(--color-line);
+  border-radius: 14px;
+}
+.field:focus-within { border-color: var(--color-accent); }
+.field b { display: flex; align-items: center; padding: 0 18px; background: var(--color-yellow); color: var(--color-on-yellow); font-size: var(--text-4xl); font-weight: 700; }
+.field input { flex: 1; min-width: 0; padding: var(--space-4) 14px; border: 0; background: transparent; font-family: var(--font-display); font-size: 32px; font-weight: 600; }
+.field input:focus { outline: 0; }
+.hero .field { border-color: rgba(255, 255, 255, .25); background: rgba(255, 255, 255, .94); color: #0E2430; }
+.hero .field input { color: #0E2430; }
+.hero .field input::placeholder { color: #8AA0AA; }
+
+/* Search results under the hero. */
+#sug:not(:empty) { margin-bottom: 14px; }
+.sug {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 60px;
+  margin-bottom: var(--space-3);
+  padding: var(--space-4) 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  color: inherit;
+  text-decoration: none;
+  transition: transform var(--duration-base), box-shadow var(--duration-base), border-color var(--duration-base);
+  animation: rise .3s backwards;
+}
+.sug b { min-width: 62px; font: 700 26px var(--font-display); }
+.sug span { flex: 1; color: var(--color-muted); }
+.sug:hover { transform: translateY(-2px); border-color: var(--color-accent); }
+
+/* Crane banner caption: number plate and status. */
+.plate { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.pid { padding: var(--space-3) var(--space-5); border-radius: 10px; background: var(--color-yellow); color: var(--color-on-yellow); font-size: 44px; font-weight: 700; line-height: 1; }
+.plate .fl { margin-bottom: var(--space-1); font-size: var(--text-xl); font-weight: 600; }
+.plate .upd { margin: var(--space-1) 0 0; font-size: var(--text-md); }
+.banner .plate { position: absolute; left: 14px; right: 14px; bottom: var(--space-4); align-items: flex-end; margin: 0; pointer-events: none; }
+.banner .plate .fl { text-shadow: 0 1px 8px rgba(0, 0, 0, .6); }
+.banner .plate .upd { margin: var(--space-1) 0 0; color: var(--color-on-photo-muted); font-size: var(--text-md); }
+.banner .pid { box-shadow: 0 6px 18px -6px rgba(0, 0, 0, .6); }
+.mode { display: inline-flex; align-items: center; gap: var(--space-2); margin-left: var(--space-2); color: var(--color-on-photo); font: 600 var(--text-sm) var(--font-body); text-shadow: var(--shadow-text); }
+.mode i { width: 8px; height: 8px; border-radius: 50%; background: var(--color-live); }
+.mode.down i { background: var(--color-alert); animation: blink 1.2s infinite; }
+#dhead > .btn { margin-bottom: 10px; }
+
+@media (min-width: 900px) {
+  .hero { min-height: 480px; padding: 26px 26px 22px; }
+  .hero h2 { font-size: var(--text-5xl); }
+  .hero form { max-width: 520px; }
+  .banner { height: 380px; }
+}

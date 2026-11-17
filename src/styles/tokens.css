@@ -1,0 +1,161 @@
+/*
+ * Design tokens: every colour, size, space and duration the interface uses.
+ * Components reference these and never hold a literal of their own, so a change here
+ * reaches the whole page and light/dark stay in step.
+ *
+ * Theme: light is the default. Dark applies when the device prefers it, unless the reader chose
+ * light, or when the reader chose dark. The dark values are written twice (media query and
+ * data-theme) because CSS cannot share one block between the two conditions.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---- Colour: surfaces and text ---- */
+  --color-bg: #F2F5F6;
+  --color-surface: #fff;
+  --color-text: #0E2430;
+  --color-muted: #566B76;
+  --color-line: #D3DDE1;
+
+  /* ---- Colour: brand and roles ---- */
+  --color-navy: #0B2A3A;
+  --color-yellow: #F2B705;
+  --color-accent: #0F7479;
+  --color-on-accent: #fff;
+  --color-on-yellow: #0B2A3A;
+  --color-primary: var(--color-navy);
+  --color-on-primary: #fff;
+
+  /* ---- Colour: status ---- */
+  --color-ok: #1B6E44;
+  --color-ok-bg: #DDF1E5;
+  --color-warn: #8A5300;
+  --color-warn-bg: #FBE9C6;
+  --color-bad: #A8231B;
+  --color-bad-bg: #FADDDA;
+
+  /* ---- Colour: fixed on both themes (header, bottom bar, text over the 3D scene) ---- */
+  --color-bar-start: #0B2A3A;
+  --color-bar-mid: #0F3B4F;
+  --color-bar-end: #12495C;
+  --color-nav: #0C2D3E;
+  --color-nav-text: #A9C2CC;
+  --color-nav-active: rgba(255, 255, 255, .11);
+  --color-nav-line: rgba(255, 255, 255, .12);
+  --color-glass: rgba(8, 26, 35, .52);
+  --color-glass-line: rgba(255, 255, 255, .16);
+  --color-on-photo: #fff;
+  --color-on-photo-muted: #D8E6EC;
+  --color-live: #3BE07A;
+  --color-alert: #FF5A4F;
+  --color-badge: #D93A2F;
+
+  /* ---- Shadow ---- */
+  --shadow-card: 0 1px 2px rgba(14, 36, 48, .05), 0 10px 28px -18px rgba(14, 36, 48, .35);
+  --shadow-lift: 0 10px 20px -12px rgba(5, 17, 23, .55);
+  --shadow-hero: 0 22px 44px -22px rgba(5, 17, 23, .75);
+  --glow: rgba(15, 116, 121, .10);
+  --shadow-text: 0 1px 6px rgba(0, 0, 0, .6);
+
+  /* ---- Type ---- */
+  --font-body: Barlow, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Barlow Semi Condensed", Barlow, system-ui, sans-serif;
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 14px;
+  --text-base: 15px;
+  --text-lg: 17px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 28px;
+  --text-4xl: 34px;
+  --text-5xl: 40px;
+  --text-6xl: 52px;
+
+  /* ---- Space ---- */
+  --space-1: 4px;
+  --space-2: 6px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 24px;
+  --space-7: 32px;
+
+  /* ---- Shape ---- */
+  --radius-2xs: 2px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* ---- Layout ---- */
+  --page-width: 1120px;
+  --gutter: 16px;
+  --touch-target: 44px;
+  --nav-height: 72px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  /* ---- Stacking ---- */
+  --z-safe-area: 10;
+  --z-bar: 20;
+  --z-nav: 30;
+
+  /* ---- Motion ---- */
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --duration-fast: .12s;
+  --duration-base: .18s;
+  --duration-slow: .4s;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg: #091820;
+    --color-surface: #10262F;
+    --color-text: #E6EFF2;
+    --color-muted: #93AAB4;
+    --color-line: #24414D;
+    --color-navy: #051117;
+    --color-accent: #4FC3C8;
+    --color-on-accent: #06222A;
+    --color-primary: var(--color-yellow);
+    --color-on-primary: #0B2A3A;
+    --color-ok: #6FD3A0;
+    --color-ok-bg: #123626;
+    --color-warn: #F0B955;
+    --color-warn-bg: #3A2A0B;
+    --color-bad: #FF9B92;
+    --color-bad-bg: #3F1815;
+    --shadow-card: 0 1px 0 rgba(255, 255, 255, .03) inset, 0 14px 34px -20px rgba(0, 0, 0, .9);
+    --glow: rgba(79, 195, 200, .09);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #091820;
+  --color-surface: #10262F;
+  --color-text: #E6EFF2;
+  --color-muted: #93AAB4;
+  --color-line: #24414D;
+  --color-navy: #051117;
+  --color-accent: #4FC3C8;
+  --color-on-accent: #06222A;
+  --color-primary: var(--color-yellow);
+  --color-on-primary: #0B2A3A;
+  --color-ok: #6FD3A0;
+  --color-ok-bg: #123626;
+  --color-warn: #F0B955;
+  --color-warn-bg: #3A2A0B;
+  --color-bad: #FF9B92;
+  --color-bad-bg: #3F1815;
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, .03) inset, 0 14px 34px -20px rgba(0, 0, 0, .9);
+  --glow: rgba(79, 195, 200, .09);
+}
