@@ -73,4 +73,5 @@ export function bindCraneEvents(root) {
   grow('#more', 'purchasingLimit', PAGE_SIZE.cranePurchasing.step);
   grow('#moreq', 'requestLimit', PAGE_SIZE.craneWorkRequests.step);
   grow('#moreo', 'oilLimit', PAGE_SIZE.craneOil.step);
+  grow('#morelab', 'labLimit', PAGE_SIZE.craneOilLab.step);
 }

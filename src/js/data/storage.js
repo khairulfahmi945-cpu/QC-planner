@@ -4,6 +4,7 @@
  */
 import { STORAGE } from '../config.js';
 import { normalizeDataset } from '../domain/dataset.js';
+import { normalizeOilLab } from '../domain/oilLab.js';
 
 const withTimeout = (promise, fallback) =>
   Promise.race([promise, new Promise((resolve) => setTimeout(() => resolve(fallback), STORAGE.timeoutMs))]);
@@ -27,46 +28,46 @@ const settle = (request) =>
     request.onerror = () => reject(request.error);
   });
 
-async function readIndexedDb() {
+async function readIndexedDb(key) {
   const db = await openDatabase();
-  return settle(db.transaction(STORAGE.storeName).objectStore(STORAGE.storeName).get(STORAGE.recordKey));
+  return settle(db.transaction(STORAGE.storeName).objectStore(STORAGE.storeName).get(key));
 }
 
-async function writeIndexedDb(data) {
+async function writeIndexedDb(key, data) {
   const db = await openDatabase();
   const transaction = db.transaction(STORAGE.storeName, 'readwrite');
-  transaction.objectStore(STORAGE.storeName).put(data, STORAGE.recordKey);
+  transaction.objectStore(STORAGE.storeName).put(data, key);
   await new Promise((resolve, reject) => {
     transaction.oncomplete = resolve;
     transaction.onerror = () => reject(transaction.error);
   });
 }
 
-function readLocalStorage() {
+function readLocalStorage(localKey) {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE.legacyLocalKey) || 'null');
+    return JSON.parse(localStorage.getItem(localKey) || 'null');
   } catch {
     return null;
   }
 }
 
-async function readSaved() {
+async function readSaved({ key, localKey }) {
   try {
-    const fromIndexedDb = await readIndexedDb();
+    const fromIndexedDb = await readIndexedDb(key);
     if (fromIndexedDb) return fromIndexedDb;
   } catch {
     /* Fall through to localStorage. */
   }
-  return readLocalStorage();
+  return readLocalStorage(localKey);
 }
 
-async function writeSaved(data) {
+async function writeSaved({ key, localKey }, data) {
   try {
-    await writeIndexedDb(data);
+    await writeIndexedDb(key, data);
     return true;
   } catch {
     try {
-      localStorage.setItem(STORAGE.legacyLocalKey, JSON.stringify(data));
+      localStorage.setItem(localKey, JSON.stringify(data));
       return true;
     } catch {
       return false;
@@ -74,10 +75,20 @@ async function writeSaved(data) {
   }
 }
 
+const LIVE_SLOT = { key: STORAGE.recordKey, localKey: STORAGE.legacyLocalKey };
+const OIL_LAB_SLOT = { key: STORAGE.oilLabKey, localKey: STORAGE.oilLabLocalKey };
+
 /** The saved dataset, or null when there is none or the browser took too long to answer. */
 export async function loadSavedDataset() {
-  return normalizeDataset(await withTimeout(readSaved(), null));
+  return normalizeDataset(await withTimeout(readSaved(LIVE_SLOT), null));
 }
 
 /** Saves the dataset. Resolves true when it was kept, false when the browser refused. */
-export const saveDataset = (data) => withTimeout(writeSaved(data), false);
+export const saveDataset = (data) => withTimeout(writeSaved(LIVE_SLOT, data), false);
+
+/** The saved oil analysis results, or null. */
+export async function loadSavedOilLab() {
+  return normalizeOilLab(await withTimeout(readSaved(OIL_LAB_SLOT), null));
+}
+
+export const saveOilLab = (data) => withTimeout(writeSaved(OIL_LAB_SLOT, data), false);

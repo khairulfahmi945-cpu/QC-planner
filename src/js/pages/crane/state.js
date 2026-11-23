@@ -12,6 +12,7 @@ export const craneView = {
   purchasingLimit: PAGE_SIZE.cranePurchasing.first,
   requestLimit: PAGE_SIZE.craneWorkRequests.first,
   oilLimit: PAGE_SIZE.craneOil.first,
+  labLimit: PAGE_SIZE.craneOilLab.first,
 };
 
 /** Opens a crane on its Summary tab. Lists start on "Open" when the crane has open items. */
@@ -25,5 +26,6 @@ export function openCrane(id) {
     purchasingLimit: PAGE_SIZE.cranePurchasing.first,
     requestLimit: PAGE_SIZE.craneWorkRequests.first,
     oilLimit: PAGE_SIZE.craneOil.first,
+    labLimit: PAGE_SIZE.craneOilLab.first,
   });
 }

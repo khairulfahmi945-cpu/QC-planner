@@ -1,9 +1,11 @@
-/** What happens when someone picks the LIVE UPDATE file: read it, show it, save it, share it. */
+/** What happens when someone picks a file: read it, show it, save it, share it. Two kinds of file: LIVE UPDATE and oil analysis. */
 import { countRecords, setDataset } from '../domain/dataset.js';
+import { setOilLab } from '../domain/oilLab.js';
 import { say } from '../ui/message.js';
-import { canPublish, publishDataset } from './shared.js';
+import { CHANNELS, canPublish, publishUpload } from './shared.js';
 import { loadSheetJs } from './sheetjs.js';
-import { saveDataset } from './storage.js';
+import { saveDataset, saveOilLab } from './storage.js';
+import { parseOilWorkbook } from './oilLabReader.js';
 import { parseWorkbook } from './workbook.js';
 
 /** Lets the browser paint the "Reading..." message before the (blocking) parse starts. */
@@ -11,7 +13,8 @@ const nextPaint = () => new Promise((resolve) => setTimeout(resolve, 60));
 
 const noPmWarning = ' Warning: no PM rows were found in the monthly sheets, so crane status will be blank.';
 
-async function readFile(file) {
+/** Loads the Excel reader and turns the file into data. Returns null (after saying why) when it fails. */
+async function readFile(file, parse, isEmpty) {
   say('Loading the Excel reader…');
   let XLSX;
   try {
@@ -23,9 +26,9 @@ async function readFile(file) {
   say(`Reading ${file.name}. This can take up to 30 seconds on a phone.`);
   await nextPaint();
   try {
-    const dataset = parseWorkbook(XLSX, await file.arrayBuffer(), file.name);
-    if (!Object.keys(dataset.qcs).length) throw new Error('no cranes found in this file.');
-    return dataset;
+    const data = parse(XLSX, await file.arrayBuffer(), file.name);
+    if (isEmpty(data)) throw new Error('no rows were found in this file.');
+    return data;
   } catch (error) {
     say(`Could not read this file: ${error.message}`, 'bad');
     return null;
@@ -34,7 +37,7 @@ async function readFile(file) {
 
 /** Reads the file, replaces what the pages show, and keeps it for next time (and for everyone). */
 export async function importWorkbook(file) {
-  const dataset = await readFile(file);
+  const dataset = await readFile(file, parseWorkbook, (data) => !Object.keys(data.qcs).length);
   if (!dataset) return;
 
   const pmRows = countRecords(dataset, 'pm');
@@ -51,8 +54,32 @@ export async function importWorkbook(file) {
   }
   say(`Loaded ${Object.keys(dataset.qcs).length} cranes. Sharing with everyone…`);
   try {
-    await publishDataset(dataset, Object.keys(dataset.qcs).length);
+    await publishUpload(CHANNELS.live, dataset, { cranes: Object.keys(dataset.qcs).length });
     say(`${summary} Everyone who opens this page now sees this file.${warning}`, pmRows ? 'ok' : 'bad');
+  } catch (error) {
+    say(`Loaded on this device, but sharing failed (${error?.code || 'error'}). Try uploading again.`, 'bad');
+  }
+}
+
+/** Reads the oil analysis file, replaces what the Oil lab pages show, and keeps it (and shares it). */
+export async function importOilLab(file) {
+  const lab = await readFile(file, parseOilWorkbook, (data) => !data.samples.length);
+  if (!lab) return;
+
+  const years = Object.keys(lab.sheets).length;
+  const summary = `Loaded ${lab.samples.length} oil samples from ${years} result sheets in ${file.name}.`;
+  setOilLab(lab);
+  const savedHere = await saveOilLab(lab);
+
+  if (!canPublish()) {
+    const where = savedHere ? ' Saved on this device.' : ' Could not save it on this device; it will be gone after you close the page.';
+    say(summary + where, savedHere ? 'ok' : 'bad');
+    return;
+  }
+  say(`Loaded ${lab.samples.length} oil samples. Sharing with everyone…`);
+  try {
+    await publishUpload(CHANNELS.oilLab, lab, { samples: lab.samples.length });
+    say(`${summary} Everyone who opens this page now sees these results.`, 'ok');
   } catch (error) {
     say(`Loaded on this device, but sharing failed (${error?.code || 'error'}). Try uploading again.`, 'bad');
   }

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { after, before, test } from 'node:test';
 import { syntheticDataset } from '../fixtures/dataset.js';
+import { syntheticOilLab } from '../fixtures/oilLab.js';
 import { launch, openPage } from './helpers/page.js';
 
 const axeSource = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
@@ -20,9 +21,9 @@ async function violations(page) {
 }
 
 for (const colorScheme of ['light', 'dark']) {
-  for (const hash of ['', 'attention', 'pm', 'wirerope', 'cranes', 'data', 'Q2']) {
+  for (const hash of ['', 'attention', 'pm', 'wirerope', 'cranes', 'data', 'oil-lab', 'Q2']) {
     test(`no WCAG A/AA violations on #${hash || 'home'} (${colorScheme})`, async () => {
-      const page = await openPage(browser, { dataset: syntheticDataset, colorScheme });
+      const page = await openPage(browser, { dataset: syntheticDataset, oilLab: syntheticOilLab, colorScheme });
       await page.waitForSelector('#homebody .hgrid');
       await page.evaluate((h) => { location.hash = h; }, hash);
       await page.waitForTimeout(150);

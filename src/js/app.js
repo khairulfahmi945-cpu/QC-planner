@@ -2,12 +2,13 @@
 import { exportCranes } from './data/exportAction.js';
 import { canUpload, connectShared } from './data/shared.js';
 import { preloadSheetJs } from './data/sheetjs.js';
-import { loadSavedDataset, saveDataset } from './data/storage.js';
-import { importWorkbook } from './data/upload.js';
+import { loadSavedDataset, loadSavedOilLab, saveDataset, saveOilLab } from './data/storage.js';
+import { importOilLab, importWorkbook } from './data/upload.js';
 import { craneIds, getCrane, hasDataset, onDatasetChange, setDataset } from './domain/dataset.js';
 import { craneStatus } from './domain/crane.js';
+import { hasOilLab, onOilLabChange, setOilLab } from './domain/oilLab.js';
 import { findCranes } from './domain/search.js';
-import { $, delegate, html, render } from './lib/dom.js';
+import { $, $$, delegate, html, render } from './lib/dom.js';
 import { crossfade, prefersReducedMotion } from './lib/motion.js';
 import { initTheme, isDark, onThemeChange, setTheme } from './lib/theme.js';
 import { renderCraneList } from './pages/cranes.js';
@@ -102,17 +103,23 @@ function watchForBlockedPicker() {
       1800,
     );
   });
-  $('#file').addEventListener('change', cancel);
+  for (const picker of $$('input[type=file]')) picker.addEventListener('change', cancel);
+}
+
+/** Each upload button is a label for its own hidden file input. */
+function bindPicker(pickerId, importFile) {
+  const picker = $(pickerId);
+  picker.addEventListener('change', () => {
+    const [file] = picker.files;
+    picker.value = '';
+    if (file) importFile(file);
+  });
 }
 
 function bindUpload() {
   watchForBlockedPicker();
-  const picker = $('#file');
-  picker.addEventListener('change', () => {
-    const [file] = picker.files;
-    picker.value = '';
-    if (file) importWorkbook(file);
-  });
+  bindPicker('#file', importWorkbook);
+  bindPicker('#file-oil', importOilLab);
   // The upload button is a label so the file picker opens from a real tap; make it work from the keyboard too.
   document.addEventListener('keydown', (event) => {
     if ((event.key === 'Enter' || event.key === ' ') && event.target.classList?.contains('upbtn')) {
@@ -141,6 +148,11 @@ async function connectSharedStorage() {
       if (!canUpload()) say(`Updated to ${dataset.src}.`, 'ok');
       else if (currentMessage().kind === 'bad' && /shared data/i.test(currentMessage().text)) say('');
     },
+    onOilLab: (lab) => {
+      setOilLab(lab);
+      saveOilLab(lab);
+      if (!canUpload()) say(`Oil analysis updated to ${lab.src}.`, 'ok');
+    },
     onMessage: say,
     onConnected: () => route(false),
   });
@@ -150,6 +162,8 @@ async function loadSavedCopy() {
   const saved = await loadSavedDataset();
   // Shared data may have arrived first; do not replace it with an older copy.
   if (saved && !hasDataset()) setDataset(saved);
+  const savedOil = await loadSavedOilLab();
+  if (savedOil && !hasOilLab()) setOilLab(savedOil);
 }
 
 /* ---------- Start ---------- */
@@ -170,6 +184,7 @@ export function startApp() {
   bindUpload();
   addEventListener('hashchange', () => crossfade(() => route(true)));
   onDatasetChange(() => route(false));
+  onOilLabChange(() => route(false));
 
   route(false);
   connectSharedStorage();

@@ -3,7 +3,9 @@ import { MONTH_NAMES } from '../config.js';
 import { canUpload, isShared } from '../data/shared.js';
 import { countRecords, dataYear, describeUpload, getDataset } from '../domain/dataset.js';
 import { getFleet } from '../domain/fleet.js';
+import { getOilLab } from '../domain/oilLab.js';
 import { html } from '../lib/dom.js';
+import { formatDate } from '../lib/dates.js';
 import { formatNumber } from '../lib/format.js';
 import { caption, detailList, detailRow, insightCard, pageHeader } from '../ui/components.js';
 import { messageMarkup } from '../ui/message.js';
@@ -13,15 +15,17 @@ const steps = html`
     <li>Open this page in Chrome, Safari or on a computer. The Claude phone app may not open the file picker.</li>
     <li>Tap <b>Upload live update file</b> and choose the latest LIVE UPDATE Excel file (.xlsx).</li>
     <li>Check the numbers under <b>What was read from the file</b>.</li>
+    <li>For oil lab results, tap <b>Upload oil analysis file</b> and choose the QC Oil Analysis Result file. It is a separate file and does not replace the live update.</li>
   </ol>`;
 
-const uploadButton = () =>
-  html`<label class="btn pri upbtn" for="file" tabindex="0" role="button">Upload live update file</label>`;
+/** The label opens the hidden file input with the given id from a real tap. */
+const uploadButton = (inputId, text, primary) =>
+  html`<label class="btn${primary ? ' pri' : ''} upbtn" for="${inputId}" tabindex="0" role="button">${text}</label>`;
 
 function toolbar() {
   return html`
     <div class="tools">
-      ${canUpload() ? uploadButton() : ''}
+      ${canUpload() ? html`${uploadButton('file', 'Upload live update file', true)}${uploadButton('file-oil', 'Upload oil analysis file', false)}` : ''}
       ${getDataset() ? html`<button class="btn" type="button" data-act="exall">Export all (Excel)</button>` : ''}
     </div>
     ${messageMarkup()}`;
@@ -59,6 +63,22 @@ function whatWasRead(dataset) {
     ${fixedDates ? caption(`${fixedDates} work request dates had the day and month swapped in the Excel file. They were corrected using the work request number.`) : ''}`);
 }
 
+function oilLabCard() {
+  const lab = getOilLab();
+  if (!lab) {
+    return insightCard('Oil analysis file', 'Lab results for oil samples (a separate Excel file)', html`
+      <p class="sub">Not uploaded yet. Tap <b>Upload oil analysis file</b> and choose the QC Oil Analysis Result file to see the Oil lab page and each crane's lab results.</p>`);
+  }
+  const sheets = Object.entries(lab.sheets);
+  return insightCard('Oil analysis file', 'Lab results for oil samples (a separate Excel file)', html`
+    <div class="read">${detailList(
+      detailRow('File', lab.src),
+      detailRow('Samples', readCount(lab.samples.length, `newest sampled ${formatDate(lab.samples[0]?.d)}`)),
+      ...sheets.map(([name, count]) => detailRow(String(name).trim(), readCount(count))),
+      detailRow('Stored', isShared() ? 'Shared with everyone who opens this page' : 'On this device only'),
+    )}</div>`);
+}
+
 export function renderDataPage() {
   const dataset = getDataset();
   const intro = isShared()
@@ -70,7 +90,7 @@ export function renderDataPage() {
     const body = canUpload()
       ? steps
       : html`<p class="sub">Waiting for an editor to upload the latest LIVE UPDATE file. It appears here automatically.</p>`;
-    return html`${header}<div class="igrid">${insightCard('No data loaded yet', '', body)}</div>`;
+    return html`${header}<div class="igrid">${insightCard('No data loaded yet', '', body)}${oilLabCard()}</div>`;
   }
   return html`
     ${header}
@@ -82,6 +102,7 @@ export function renderDataPage() {
         detailRow('Stored', isShared() ? 'Shared with everyone who opens this page' : 'On this device only'),
       ))}
       ${whatWasRead(dataset)}
+      ${oilLabCard()}
       ${insightCard('How to update', '', steps)}
     </div>`;
 }

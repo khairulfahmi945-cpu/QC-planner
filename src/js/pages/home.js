@@ -2,6 +2,7 @@
 import { MONTH_NAMES, THRESHOLDS } from '../config.js';
 import { getAlertRows, getAlertSummary } from '../domain/alerts.js';
 import { describeUpload, getDataset } from '../domain/dataset.js';
+import { getOilLabSummary } from '../domain/oilLab.js';
 import { getFleet } from '../domain/fleet.js';
 import { monthLongFromKey, todayIso } from '../lib/dates.js';
 import { $$, html } from '../lib/dom.js';
@@ -70,6 +71,19 @@ function oilFigures(fleet) {
   };
 }
 
+/** The Home card for the oil analysis results (only when that file has been uploaded). */
+function oilLabSummaryCard(lab) {
+  const ok = lab.latest.length - lab.criticalNow - lab.cautionNow;
+  return {
+    href: '#oil-lab',
+    label: 'Oil lab',
+    value: lab.criticalNow,
+    tone: lab.criticalNow ? 'bad' : lab.cautionNow ? 'warn' : 'ok',
+    caption: `critical now · ${lab.cautionNow} caution`,
+    bar: meter([[ok, 'ok'], [lab.cautionNow, 'warn'], [lab.criticalNow, 'bad']], lab.latest.length),
+  };
+}
+
 function summaryCards(fleet) {
   const { redCount } = getAlertSummary();
   const [p1, p2, p3, unranked] = fleet.requestsByRank;
@@ -82,6 +96,7 @@ function summaryCards(fleet) {
   const oil = oilFigures(fleet);
   const reasons = alertReasons(fleet, overLimit);
   const ropeJobs = fleet.doneRopeJobs.length + fleet.pendingRopeJobs.length;
+  const lab = getOilLabSummary();
 
   return [
     {
@@ -137,6 +152,7 @@ function summaryCards(fleet) {
         ? `oil jobs in ${monthLongFromKey(oil.latest)}${oil.couplingsDue ? ` · ${oil.couplingsDue} couplings due` : ''}`
         : 'no oil records',
     },
+    ...(lab ? [oilLabSummaryCard(lab)] : []),
     {
       href: '#fleets',
       label: 'Fleets',

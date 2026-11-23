@@ -14,10 +14,12 @@ const INITIAL = {
   exN: 8,
   dueN: 8,
   olN: 10,
+  labf: 'all', // Oil lab: result filter
+  labN: 8,
 };
 
 /** Counters that go back to their first size whenever a filter changes. */
-const GROWING = ['wqN', 'jobN', 'rpN', 'exN', 'dueN', 'olN'];
+const GROWING = ['wqN', 'jobN', 'rpN', 'exN', 'dueN', 'olN', 'labN'];
 
 export const view = { ...INITIAL };
 

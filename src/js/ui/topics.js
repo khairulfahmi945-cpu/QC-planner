@@ -8,6 +8,7 @@ export const TOPICS = [
   ['wirerope', 'Wirerope'],
   ['certificates', 'Inspection'],
   ['oil', 'Oil'],
+  ['oil-lab', 'Oil lab'],
   ['fleets', 'Fleets'],
 ];
 

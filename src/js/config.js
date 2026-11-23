@@ -38,6 +38,8 @@ export const PAGE_SIZE = {
   expiredCertificates: { first: 8, step: 20 },
   dueCertificates: { first: 8, step: 20 },
   oilJobs: { first: 10, step: 20, max: 100 },
+  oilLabAttention: { first: 8, step: 20 },
+  craneOilLab: { first: 10, step: 20 },
   craneWorkRequests: { first: 40, step: 40 },
   cranePurchasing: { first: 40, step: 40 },
   craneOil: { first: 8, step: 16 },
@@ -55,10 +57,18 @@ export const STORAGE = {
   databaseName: 'qc-lookup',
   storeName: 'kv',
   recordKey: 'data',
+  oilLabKey: 'oilLab',
   legacyLocalKey: 'qcD',
+  oilLabLocalKey: 'qcOilLab',
   themeKey: 'qcTheme',
   timeoutMs: 4000,
 };
 
 /** The one place in the shared database that holds the current upload (claude.ai only). */
-export const SHARED = { collection: 'live', documentId: 'current', blobBase: '/_blob/', loadTimeoutMs: 10000 };
+export const SHARED = {
+  collection: 'live',
+  documentId: 'current', // the LIVE UPDATE upload
+  oilLabDocumentId: 'oil-lab', // the oil analysis upload
+  blobBase: '/_blob/',
+  loadTimeoutMs: 10000,
+};

@@ -18,10 +18,11 @@ The Home page is short on purpose. Each card opens a page with the full detail.
 | **Insights → Wirerope** | Ropes closest to their limit, by rope type, pending by plan group, replaced after the limit, pending list, SANY update |
 | **Insights → Inspection** | PMA / CF expiry by month, expired and expiring lists, quarterly inspection progress |
 | **Insights → Oil** | Oil jobs per month, by component, longest since last job, SOS coupling service |
+| **Insights → Oil lab** | Lab results from the oil analysis file: results per month, by component, failure modes, most critical components, and the components that need action now |
 | **Insights → Fleets** | Every crane batch side by side |
 | **Cranes** | Search, filters, tiles or a list with the key numbers for each crane |
 | **Data** | Upload, export, and a check of what was read from the file |
-| **One crane** | 3D banner and tabs: Summary, PM, PR / WO, Work request, Wirerope, Inspection, Oil |
+| **One crane** | 3D banner and tabs: Summary, PM, PR / WO, Work request, Wirerope, Inspection, Oil, Oil lab |
 
 On a phone the navigation is a bar at the bottom. On a computer it is in the header. Light and dark mode switch from the header.
 
@@ -32,7 +33,14 @@ The page has no built-in data. Open **Data**, tap **Upload live update file** an
 - **On claude.ai (shared):** one upload is stored in the page's shared storage, and everyone who opens the page sees it straight away. Only people with edit access see the upload button.
 - **Anywhere else (for example GitHub Pages):** the upload is saved only in that browser and reopens automatically next time.
 
-Sheets read from the file: `FYK INS`, the monthly PM sheets (`JANUARI` … `NOVEMBER 2026`), `PR <year>`, `WORK REQUEST`, `WIREROPE <year>`, `Sheet1` (SANY wirerope update), `SOS COUPLING SERVISING` and `OIL SAMPLING CHANGE MONITOR`. The **Data** page lists how many rows were read from each.
+### Two files
+
+The dashboard takes two separate Excel files, each with its own upload button on **Data**:
+
+- **Upload live update file**: the LIVE UPDATE workbook (everything except lab results).
+- **Upload oil analysis file**: the *QC Oil Analysis Result* workbook. Only its `Result <year>` sheets are read (one row per oil sample: result, failure mode, recommendation, action). It feeds the **Oil lab** page, the **Oil lab** tab on each crane and an **Oil lab** card on Home. Uploading one file never replaces the other. "Now" means the newest result of each crane and component, if it is from the last 12 months.
+
+Sheets read from the live update file: `FYK INS`, the monthly PM sheets (`JANUARI` … `NOVEMBER 2026`), `PR <year>`, `WORK REQUEST`, `WIREROPE <year>`, `Sheet1` (SANY wirerope update), `SOS COUPLING SERVISING` and `OIL SAMPLING CHANGE MONITOR`. The **Data** page lists how many rows were read from each.
 
 Two things the reader corrects:
 

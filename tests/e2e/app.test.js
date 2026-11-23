@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
 import { syntheticDataset } from '../fixtures/dataset.js';
+import { syntheticOilLab } from '../fixtures/oilLab.js';
 import { launch, openPage } from './helpers/page.js';
 
 let browser;
@@ -73,4 +74,27 @@ test('the theme button switches between light and dark and says what it shows', 
   assert.equal(await page.textContent('#thl'), 'Light');
   await page.click('#theme');
   assert.equal(await page.getAttribute('html', 'data-theme'), 'light');
+});
+
+test('oil analysis is a separate file: its page, crane tab and Home card appear once it is loaded', async () => {
+  const page = await openPage(browser, { dataset: syntheticDataset, oilLab: syntheticOilLab });
+  await page.waitForSelector('#homebody .hgrid');
+  assert.match(await page.textContent('#homebody'), /Oil lab/);
+  await go(page, 'oil-lab');
+  assert.match(await page.textContent('#view .kstrip'), /Critical now/);
+  assert.match(await page.textContent('#view'), /Needs action now/);
+  await go(page, 'Q2');
+  await page.click('[data-t="lab"]');
+  assert.match(await page.textContent('#panel'), /Change the oil now/);
+  assert.deepEqual(page.problems, []);
+});
+
+test('the Data page offers both upload buttons, and the Oil lab page works without live data', async () => {
+  const page = await openPage(browser, { oilLab: syntheticOilLab });
+  await go(page, 'data');
+  assert.match(await page.textContent('#view .tools'), /Upload live update file/);
+  assert.match(await page.textContent('#view .tools'), /Upload oil analysis file/);
+  await go(page, 'oil-lab');
+  assert.match(await page.textContent('#view'), /Needs action now/);
+  assert.deepEqual(page.problems, []);
 });

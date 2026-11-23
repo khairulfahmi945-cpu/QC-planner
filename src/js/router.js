@@ -40,7 +40,7 @@ function drawView(animate) {
   const element = $('#view');
   element.classList.toggle('still', !animate);
   const view = viewFor(state.page);
-  if (!hasDataset() && state.page !== 'data') {
+  if (!hasDataset() && state.page !== 'data' && !view.standalone) {
     render(element, html`
       <div class="phead"><h2>No data loaded yet</h2></div>
       <article class="card empty-state"><p>Open the Data page to upload the latest LIVE UPDATE file.</p><div class="tools"><a class="btn pri" href="#data">Go to Data</a></div></article>`);

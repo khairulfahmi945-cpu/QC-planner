@@ -3,6 +3,7 @@ import { isOpenJob } from '../../../domain/purchasing.js';
 import { openRequests } from '../../../domain/workRequests.js';
 import { renderInspection } from './inspection.js';
 import { renderOil } from './oil.js';
+import { oilLabCount, renderOilLab } from './oilLab.js';
 import { renderPm } from './pm.js';
 import { renderPurchasing } from './purchasing.js';
 import { renderRequests } from './requests.js';
@@ -17,4 +18,5 @@ export const CRANE_TABS = [
   { id: 'wr', label: 'Wirerope', count: (c) => c.wr.length + c.sany.length, render: renderWirerope },
   { id: 'ins', label: 'Inspection', count: () => '', render: renderInspection },
   { id: 'oil', label: 'Oil', count: (c) => c.oil.length, render: renderOil },
+  { id: 'lab', label: 'Oil lab', count: oilLabCount, render: renderOilLab },
 ];
