@@ -30,9 +30,9 @@ async function bundle(entry, options) {
   return result.outputFiles[0].text.trim();
 }
 
-const bundleScript = () => bundle('src/js/main.js', { format: 'iife', target: 'es2020' });
+const bundleScript = () => bundle('src/js/main.js', { format: 'iife', target: 'es2019' });
 const bundleStyles = () =>
-  bundle('src/styles/main.css', { target: ['chrome100', 'safari15', 'firefox100'] });
+  bundle('src/styles/main.css', { target: ['chrome80', 'safari13', 'firefox78'] });
 
 /** Replaces a marker comment. A function replacer keeps "$&" and friends in the code literal. */
 const fill = (page, marker, text) => {

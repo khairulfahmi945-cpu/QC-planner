@@ -37,6 +37,17 @@
 <input type="file" id="file" class="vh" tabindex="-1" aria-hidden="true" accept=".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12,application/vnd.ms-excel">
 <input type="file" id="file-oil" class="vh" tabindex="-1" aria-hidden="true" accept=".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12,application/vnd.ms-excel">
 </main>
+<script>
+/* If the app fails to start (an old phone browser, a blocked script), say so instead of showing a blank page. */
+addEventListener('error', function (e) {
+  if (document.getElementById('startup-error')) return;
+  var box = document.createElement('pre');
+  box.id = 'startup-error';
+  box.style.cssText = 'margin:0;padding:12px;background:#FADDDA;color:#A8231B;font:13px/1.4 monospace;white-space:pre-wrap';
+  box.textContent = 'The dashboard could not start: ' + (e.message || 'unknown error') + (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : '');
+  document.body.insertBefore(box, document.body.firstChild);
+});
+</script>
 <!-- build:js -->
 </body>
 </html>

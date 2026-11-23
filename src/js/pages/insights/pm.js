@@ -61,6 +61,9 @@ function longestSinceLastPm(fleet) {
     .slice(0, 8);
 }
 
+/** The last item of a list, or undefined. */
+const lastOf = (list) => list[list.length - 1];
+
 export function renderPm() {
   const fleet = getFleet();
   const { month, count } = fleet;
@@ -108,7 +111,7 @@ export function renderPm() {
       ${insightCard(`${monthName} by crane`, 'Tap a crane to open it. The small date is the PM date in the file.', html`
         ${monthGroup('Not started', [...fleet.pm.pend, ...fleet.pm.none], 'mu')}
         ${monthGroup('In plan', fleet.pm.plan, 'wn', (id) => datesIn(id, month)[0] || '')}
-        ${monthGroup('Done', fleet.pm.done, 'ok', (id) => datesIn(id, month).at(-1) || '')}`, { wide: true })}
+        ${monthGroup('Done', fleet.pm.done, 'ok', (id) => lastOf(datesIn(id, month)) || '')}`, { wide: true })}
       ${insightCard('PM status for every crane', `One row per crane, one block per month of ${year}. Tap a row to open the crane.`, html`
         ${legend(GRID_LEGEND)}
         ${statusGrid(fleet)}`, { wide: true })}

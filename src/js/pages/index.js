@@ -31,4 +31,4 @@ const VIEWS = {
 };
 
 /** The view for an address key, or null. Own keys only, so "#constructor" is not a page. */
-export const viewFor = (key) => (Object.hasOwn(VIEWS, key) ? VIEWS[key] : null);
+export const viewFor = (key) => (Object.prototype.hasOwnProperty.call(VIEWS, key) ? VIEWS[key] : null);

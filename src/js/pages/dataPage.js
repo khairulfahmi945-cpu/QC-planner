@@ -44,7 +44,7 @@ function whatWasRead(dataset) {
   const sheets = dataset.sheets || {};
   const pmRows = countRecords(dataset, 'pm');
   const monthRange = fleet.pmByMonth.length
-    ? `${MONTH_NAMES[fleet.pmByMonth[0].month]} to ${MONTH_NAMES[fleet.pmByMonth.at(-1).month]}, ${fleet.pmByMonth.length} monthly sheets`
+    ? `${MONTH_NAMES[fleet.pmByMonth[0].month]} to ${MONTH_NAMES[fleet.pmByMonth[fleet.pmByMonth.length - 1].month]}, ${fleet.pmByMonth.length} monthly sheets`
     : '';
   const fixedDates = dataset.fix?.wqDates;
 
