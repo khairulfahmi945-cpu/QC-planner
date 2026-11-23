@@ -18,7 +18,7 @@ The Home page is short on purpose. Each card opens a page with the full detail.
 | **Insights → Wirerope** | Ropes closest to their limit, by rope type, pending by plan group, replaced after the limit, pending list, SANY update |
 | **Insights → Inspection** | PMA / CF expiry by month, expired and expiring lists, quarterly inspection progress |
 | **Insights → Oil** | Oil jobs per month, by component, longest since last job, SOS coupling service |
-| **Insights → Oil lab** | Lab results from the oil analysis file: results per month, by component, failure modes, most critical components, and the components that need action now |
+| **Insights → Oil lab** | The oil analysis file: a crane-by-component **plan board** that shows at a glance what needs oil replacement (Oil) and what needs a sample (Smp), open sampling work orders, lab results per month and by component, failure modes, the lab results needing action, and the reference tables (alert limits, lube chart, SANY oil data) |
 | **Insights → Fleets** | Every crane batch side by side |
 | **Cranes** | Search, filters, tiles or a list with the key numbers for each crane |
 | **Data** | Upload, export, and a check of what was read from the file |
@@ -38,7 +38,7 @@ The page has no built-in data. Open **Data**, tap **Upload live update file** an
 The dashboard takes two separate Excel files, each with its own upload button on **Data**:
 
 - **Upload live update file**: the LIVE UPDATE workbook (everything except lab results).
-- **Upload oil analysis file**: the *QC Oil Analysis Result* workbook. Only its `Result <year>` sheets are read (one row per oil sample: result, failure mode, recommendation, action). It feeds the **Oil lab** page, the **Oil lab** tab on each crane and an **Oil lab** card on Home. Uploading one file never replaces the other. "Now" means the newest result of each crane and component, if it is from the last 12 months.
+- **Upload oil analysis file**: the *QC Oil Analysis Result* workbook. Everything in it is read: the plan sheets (Hoist, Trolley, Boom, SCR, MCR, TLS, Gantry: oil change status, sampling status, priority, next sampling, last result, action and the sampling history), the `Result <year>` sheets (one row per lab sample), the Work Order sheet and the reference tables. It feeds the **Oil lab** page, the **Oil lab** tab on each crane (plan, history and results per component) and an **Oil lab** card on Home. A component needs oil replacement when its oil change status is Due or its action says change oil; it needs sampling when its sampling status is Due or its action says resample. Uploading one file never replaces the other. "Now" means the newest result of each crane and component, if it is from the last 12 months.
 
 Sheets read from the live update file: `FYK INS`, the monthly PM sheets (`JANUARI` … `NOVEMBER 2026`), `PR <year>`, `WORK REQUEST`, `WIREROPE <year>`, `Sheet1` (SANY wirerope update), `SOS COUPLING SERVISING` and `OIL SAMPLING CHANGE MONITOR`. The **Data** page lists how many rows were read from each.
 

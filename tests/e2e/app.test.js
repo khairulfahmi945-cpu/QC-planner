@@ -81,11 +81,16 @@ test('oil analysis is a separate file: its page, crane tab and Home card appear 
   await page.waitForSelector('#homebody .hgrid');
   assert.match(await page.textContent('#homebody'), /Oil lab/);
   await go(page, 'oil-lab');
-  assert.match(await page.textContent('#view .kstrip'), /Critical now/);
+  assert.match(await page.textContent('#view .lb'), /Oil/);
+  assert.match(await page.textContent('#view .lb tbody tr'), /Q2/);
+  assert.match(await page.textContent('#view'), /Components due for oil replacement/);
+  assert.match(await page.textContent('#view'), /Alert limits/);
   assert.match(await page.textContent('#view'), /Needs action now/);
   await go(page, 'Q2');
   await page.click('[data-t="lab"]');
+  assert.match(await page.textContent('#panel'), /Oil replacement due/);
   assert.match(await page.textContent('#panel'), /Change the oil now/);
+  assert.match(await page.textContent('#panel'), /760/);
   assert.deepEqual(page.problems, []);
 });
 

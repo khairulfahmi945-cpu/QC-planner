@@ -1,6 +1,6 @@
 /** Insights: oil analysis (lab) results from the separate oil analysis file. */
 import { PAGE_SIZE } from '../../config.js';
-import { MONTHS_SHOWN, RESULTS, RESULT_TONE, getOilLabSummary, hasOilLab } from '../../domain/oilLab.js';
+import { MONTHS_SHOWN, RESULTS, RESULT_TONE, getOilLab, getOilLabSummary, hasOilLab } from '../../domain/oilLab.js';
 import { formatDate, monthLongFromKey, yearFromKey } from '../../lib/dates.js';
 import { html } from '../../lib/dom.js';
 import { formatNumber } from '../../lib/format.js';
@@ -10,6 +10,7 @@ import {
   showMoreButton,
 } from '../../ui/components.js';
 import { topicNav } from '../../ui/topics.js';
+import { oilBoard, referenceTable, workOrderCard } from './oilBoard.js';
 import { view } from '../../ui/viewState.js';
 
 const TOP_MODES = 6;
@@ -51,6 +52,7 @@ export function renderOilLab() {
       <div class="tools"><a class="btn pri" href="#data">Go to Data</a></div>`;
   }
   const summary = getOilLabSummary();
+  const { refs } = getOilLab();
   const largestMonth = Math.max(1, ...summary.months.map((key) => totalOf(summary.byMonth[key])));
   const groups = Object.entries(summary.byGroup).sort((a, b) => totalOf(b[1]) - totalOf(a[1]));
   const largestGroup = Math.max(1, ...groups.map(([, tally]) => totalOf(tally)));
@@ -58,7 +60,9 @@ export function renderOilLab() {
 
   return html`
     ${topicNav('oil-lab')}
-    ${pageHeader('Oil lab', `Oil analysis results from the lab. Newest sample ${summary.newest ? formatDate(summary.newest) : 'none'}.`)}
+    ${pageHeader('Oil lab', `What needs oil replacement and sampling, and the lab results. Newest sample ${summary.newest ? formatDate(summary.newest) : 'none'}.`)}
+    ${oilBoard()}
+    ${sectionHeader('Lab results', `${formatNumber(getOilLab().samples.length)} samples in the file`)}
     ${keyFigures([
       [formatNumber(summary.windowCount), `Samples in ${MONTHS_SHOWN} months`, ''],
       [summary.criticalNow, 'Critical now', summary.criticalNow ? 'bad' : ''],
@@ -82,9 +86,16 @@ export function renderOilLab() {
         ${resultLegend()}`) : ''}
       ${modes.length ? insightCard('Failure modes', 'Caution and critical samples, last 12 months', horizontalBars(
         modes.map(([label, value]) => ({ label, value })), { tone: 'warn' })) : ''}
+      ${workOrderCard()}
       ${summary.criticalByCrane.length ? insightCard('Most critical components', 'Components whose newest result is critical, by crane', horizontalBars(
         summary.criticalByCrane.slice(0, TOP_CRANES).map(([id, value]) => ({ label: html`<b>${id}</b>`, value, href: `#${id}` })),
         { tone: 'bad', format: (n) => `${n} critical` })) : ''}
     </div>
-    ${attentionList(summary)}`;
+    ${attentionList(summary)}
+    ${sectionHeader('Reference', 'Tables from the oil analysis file')}
+    <div class="igrid">
+      ${referenceTable('Alert limits', 'Properties Limit sheet: abnormal and severe limits by parameter', refs.limits)}
+      ${referenceTable('Lube chart by fleet', 'QC Mini Chart sheet: oil grade of each component, and gantry gearboxes', refs.lube)}
+      ${referenceTable('SANY oil types and volumes', 'SANY sheet', refs.sany)}
+    </div>`;
 }

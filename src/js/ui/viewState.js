@@ -15,6 +15,7 @@ const INITIAL = {
   dueN: 8,
   olN: 10,
   labf: 'all', // Oil lab: result filter
+  labv: 'any', // Oil lab: which cranes the plan board lists
   labN: 8,
 };
 

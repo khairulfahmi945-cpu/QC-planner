@@ -71,16 +71,21 @@ function oilFigures(fleet) {
   };
 }
 
-/** The Home card for the oil analysis results (only when that file has been uploaded). */
+/** The Home card for the oil analysis file (only when it has been uploaded): what needs oil or a sample. */
 function oilLabSummaryCard(lab) {
-  const ok = lab.latest.length - lab.criticalNow - lab.cautionNow;
+  const { board } = lab;
+  const planned = board.rows.length;
+  const tone = board.changeCells ? 'bad' : board.sampleCells ? 'warn' : 'ok';
+  if (!planned) {
+    return { href: '#oil-lab', label: 'Oil lab', value: lab.criticalNow, tone: lab.criticalNow ? 'bad' : 'ok', caption: `critical now · ${lab.cautionNow} caution` };
+  }
   return {
     href: '#oil-lab',
     label: 'Oil lab',
-    value: lab.criticalNow,
-    tone: lab.criticalNow ? 'bad' : lab.cautionNow ? 'warn' : 'ok',
-    caption: `critical now · ${lab.cautionNow} caution`,
-    bar: meter([[ok, 'ok'], [lab.cautionNow, 'warn'], [lab.criticalNow, 'bad']], lab.latest.length),
+    value: board.changeCells,
+    tone,
+    caption: `components need oil replacement · ${board.sampleCells} need sampling`,
+    bar: meter([[board.changeCells, 'bad'], [board.sampleCells, 'warn']], board.changeCells + board.sampleCells),
   };
 }
 

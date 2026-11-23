@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 import { componentGroup, findResultSheets, normalizeResult, parseOilWorkbook } from '../../src/js/data/oilLabReader.js';
 import { setNow } from '../../src/js/lib/clock.js';
-import { getOilLabSummary, latestSamples, needsAction, samplesOfCrane, setOilLab } from '../../src/js/domain/oilLab.js';
+import { getOilLabSummary, latestSamples, needsAction, planNeeds, samplesOfCrane, setOilLab } from '../../src/js/domain/oilLab.js';
 import { syntheticOilLab } from '../fixtures/oilLab.js';
 
 afterEach(() => {
@@ -49,4 +49,19 @@ test('the newest result of each component decides what needs action', () => {
   assert.equal(summary.changeOil, 1);
   assert.deepEqual(summary.attention.map((s) => s.sys), ['HOIST']);
   assert.ok(needsAction(summary.attention[0]));
+});
+
+test('the plan board says which components need oil replaced and which need a sample', () => {
+  setNow('2026-11-16T12:00:00');
+  setOilLab(syntheticOilLab);
+  const { board } = getOilLabSummary();
+  assert.equal(board.rows.length, 2); // Q1 and Q2
+  assert.equal(board.changeCells, 1);
+  assert.equal(board.sampleCells, 1);
+  assert.equal(board.cranesEither, 1);
+  assert.equal(board.orders.open.length, 1);
+  const q2 = board.rows.find((r) => r.id === 'Q2');
+  assert.deepEqual(planNeeds(q2.cells.Hoist.row), { change: true, sample: false });
+  assert.deepEqual(planNeeds(q2.cells.Boom.row), { change: false, sample: true });
+  assert.equal(board.rows.find((r) => r.id === 'Q1').cells.Boom, undefined); // a blank plan row is not a component
 });
