@@ -30,7 +30,7 @@
 <p class="hint" id="h">Type the number only. 45 opens Q45.</p>
 </form></div>
 <div id="sug" aria-live="polite"></div>
-<div id="homebody"></div>
+<div id="homebody"><p id="boot" class="boot">Loading the dashboard…<noscript> JavaScript is turned off here. Open this file in Chrome or Safari, not in a file preview.</noscript></p></div>
 </section>
 <section id="view" hidden></section>
 <section id="detail" hidden><div id="dhead"></div><div id="dbody"></div></section>
@@ -39,6 +39,10 @@
 </main>
 <script>
 /* If the app fails to start (an old phone browser, a blocked script), say so instead of showing a blank page. */
+setTimeout(function () {
+  var boot = document.getElementById('boot');
+  if (boot) boot.textContent = 'The dashboard did not start. If you opened this file from a file manager, chat app or preview, open it in Chrome or Safari instead (long-press the file, then Open with Chrome or Safari).';
+}, 5000);
 addEventListener('error', function (e) {
   if (document.getElementById('startup-error')) return;
   var box = document.createElement('pre');
